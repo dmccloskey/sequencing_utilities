@@ -15,7 +15,8 @@ SAMPLE2NAME='140716_0_OxicEvo04pgiEcoliGlcM9_Broth-1'
 
 ORGANISM='ecoli_mg1655'
 THREADS=12
-OPTIONS='--library-type fr-firststrand --quartile-normalization --FDR 0.05 --num-threads '$THREADS
+OPTIONS='--library-type fr-firststrand --library-norm-method quartile --FDR 0.05 --num-threads '$THREADS
+#OPTIONS='--library-type fr-firststrand --quartile-normalization --FDR 0.05 --num-threads '$THREADS
 TRANSCRIPTS='/home/douglas/Documents/RNA_sequencing/indexes/'$ORGANISM'_notRNA_rRNA.gtf'
 
 if [ $PBS_O_WORKDIR ]
