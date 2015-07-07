@@ -12,6 +12,7 @@ Ali Ebrahim for writing the original [sequtil](http://github.com/SBRG) library f
 
 To install, please follow the [instructions](INSTALL.md).
 
-Warning:
+TODO:
 -----------------
-shell scripts need to be fixed
+add/update .py __main__ to include all function parameters
+modify shell scripts to call .py __main__
