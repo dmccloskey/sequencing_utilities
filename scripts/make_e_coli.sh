@@ -1,0 +1,97 @@
+#!/bin/sh
+
+#
+# Downloads the sequence for a strain of e. coli from NCBI and builds a
+# Bowtie index for it
+#
+
+GENOMES_MIRROR=ftp://ftp.ncbi.nlm.nih.gov/genomes
+
+BOWTIE_BUILD_EXE=/home/douglas/Programs/bowtie-1.1.2/bowtie-build
+
+CUFFLINKS_GFFREAD_EXE=/home/douglas/Programs/cufflinks-2.2.1.Linux_x86_64/gffread
+
+# build the bowtie index
+if [ ! -x "$BOWTIE_BUILD_EXE" ] ; then
+	if ! which bowtie-build ; then
+		echo "Could not find bowtie-build in current directory or in PATH"
+		exit 1
+	else
+		BOWTIE_BUILD_EXE=`which bowtie-build`
+	fi
+fi
+
+if [ ! -f NC_000913.fna ] ; then
+	if ! which wget > /dev/null ; then
+		echo wget not found, looking for curl...
+		if ! which curl > /dev/null ; then
+			echo curl not found either, aborting...
+		else
+			# Use curl
+			curl ${GENOMES_MIRROR}/Bacteria/Escherichia_coli_K_12_substr__MG1655_uid57779/NC_000913.fna -o NC_000913.fna
+		fi
+	else
+		# Use wget
+		wget ${GENOMES_MIRROR}/Bacteria/Escherichia_coli_K_12_substr__MG1655_uid57779/NC_000913.fna
+	fi
+fi
+
+if [ ! -f NC_000913.fna ] ; then
+	echo "Could not find NC_000913.fna file!"
+	exit 2
+fi
+
+echo Running ${BOWTIE_BUILD_EXE} -t 8 NC_000913.fna e_coli
+${BOWTIE_BUILD_EXE} -t 8 NC_000913.fna e_coli
+if [ "$?" = "0" ] ; then
+	echo "e_coli index built:"
+	echo "   e_coli.1.ebwt e_coli.2.ebwt"
+	echo "   e_coli.3.ebwt e_coli.4.ebwt"
+	echo "   e_coli.rev.1.ebwt e_coli.rev.2.ebwt"
+	echo "You may remove NC_000913.fna"
+else
+	echo "Index building failed; see error message"
+fi
+
+# generate the .gtf file for cufflinks
+if [ ! -x "$CUFFLINKS_GFFREAD_EXE" ] ; then
+	if ! which bowtie-build ; then
+		echo "Could not find gffread in current directory or in PATH"
+		exit 1
+	else
+		BOWTIE_BUILD_EXE=`which gffread`
+	fi
+fi
+
+if [ ! -f NC_000913.gff ] ; then
+	if ! which wget > /dev/null ; then
+		echo wget not found, looking for curl...
+		if ! which curl > /dev/null ; then
+			echo curl not found either, aborting...
+		else
+			# Use curl
+			curl ${GENOMES_MIRROR}/Bacteria/Escherichia_coli_K_12_substr__MG1655_uid57779/NC_000913.gff -o NC_000913.gff
+		fi
+	else
+		# Use wget
+		wget ${GENOMES_MIRROR}/Bacteria/Escherichia_coli_K_12_substr__MG1655_uid57779/NC_000913.gff
+	fi
+fi
+
+if [ ! -f NC_000913.gff ] ; then
+	echo "Could not find NC_000913.gff file!"
+	exit 2
+fi
+
+echo Running mv NC_000913.gff e_coli.gff 
+mv NC_000913.gff e_coli.gff 
+echo Running ${CUFFLINKS_GFFREAD_EXE} -E NC_000913.gff -T -o e_coli.gtf
+${CUFFLINKS_GFFREAD_EXE} -E NC_000913.gff -T -o e_coli.gtf
+if [ "$?" = "0" ] ; then
+	echo "e_coli .gtf built:"
+	echo "   e_coli.gtf"
+	echo "You may remove NC_000913.gff"
+else
+	echo "Conversion failed; see error message"
+fi
+
