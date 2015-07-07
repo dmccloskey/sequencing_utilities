@@ -13,15 +13,22 @@ FROM dmccloskey/cufflinks
 FROM dmccloskey/samtools
 FROM dmccloskey/python3scientific
 
+USER root
+
 # File Author / Maintainer
 MAINTAINER Douglas McCloskey <dmccloskey87@gmail.com>
 
 # Install git
-RUN apt-get update && apt-get install -y git
+RUN apt-get update && apt-get install -y wget \
+	unzip
+#RUN apt-get update && apt-get install -y git
 
 # Install sequtils from github
 WORKDIR /user/local/
-RUN git clone https://github.com/dmccloskey/sequencing_utilities
+#RUN git clone https://github.com/dmccloskey/sequencing_utilities.git
+RUN wget https://github.com/dmccloskey/sequencing_utilities/archive/master.zip
+RUN unzip master.zip
+RUN mv sequencing_utilities-master sequencing_utilities
 WORKDIR /user/local/sequencing_utilities/
 RUN python3 setup.py install
 	
@@ -43,10 +50,6 @@ RUN mv /user/local/sequencing_utilities/scripts/run_rnaseq.sh /home/user/Sequenc
 RUN rm -rf /user/local/sequencing_utilities
 RUN apt-get clean
 
-# Create an app user
-ENV HOME /home/user
-RUN useradd --create-home --home-dir $HOME user \
-    && chown -R user:user $HOME
-
+# Return app user
 WORKDIR $HOME
 USER user
