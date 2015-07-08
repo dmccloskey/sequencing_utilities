@@ -32,19 +32,19 @@ RUN mv sequencing_utilities-master sequencing_utilities
 WORKDIR /user/local/sequencing_utilities/
 RUN python3 setup.py install
 	
-# Create sequencing directory
-WORKDIR /home/user/
-RUN mkdir Sequencing
-WORKDIR /home/user/Sequencing
-RUN mkdir fastq #data directory
-RUN mkdir indices #indices directory
-RUN mkdir scripts #shell scripts directory
+## Create sequencing directory
+#WORKDIR /home/user/
+#RUN mkdir Sequencing
+#WORKDIR /home/user/Sequencing
+#RUN mkdir fastq #data directory
+#RUN mkdir indices #indices directory
+#RUN mkdir scripts #shell scripts directory
 
-# Copy shell scripts
-RUN mv /user/local/sequencing_utilities/scripts/make_e_coli.sh /home/user/Sequencing/indices/make_e_coli.sh
-RUN mv /user/local/sequencing_utilities/scripts/run_cuffdiff.sh /home/user/Sequencing/scripts/run_cuffdiff.sh
-RUN mv /user/local/sequencing_utilities/scripts/run_reseq.sh /home/user/Sequencing/scripts/run_reseq.sh
-RUN mv /user/local/sequencing_utilities/scripts/run_rnaseq.sh /home/user/Sequencing/scripts/run_rnaseq.sh
+## Copy shell scripts
+#RUN mv /user/local/sequencing_utilities/scripts/make_e_coli.sh /home/user/Sequencing/indices/make_e_coli.sh
+#RUN mv /user/local/sequencing_utilities/scripts/run_cuffdiff.sh /home/user/Sequencing/scripts/run_cuffdiff.sh
+#RUN mv /user/local/sequencing_utilities/scripts/run_reseq.sh /home/user/Sequencing/scripts/run_reseq.sh
+#RUN mv /user/local/sequencing_utilities/scripts/run_rnaseq.sh /home/user/Sequencing/scripts/run_rnaseq.sh
 
 # Cleanup
 RUN rm -rf /user/local/sequencing_utilities
@@ -53,3 +53,6 @@ RUN apt-get clean
 # Return app user
 WORKDIR $HOME
 USER user
+
+# Start at the console
+CMD ["python3"]
