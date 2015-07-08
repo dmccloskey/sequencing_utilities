@@ -48,6 +48,7 @@ RUN python3 setup.py install
 
 # Cleanup
 RUN rm -rf /user/local/sequencing_utilities
+RUN rm -rf /user/local/master.zip
 RUN apt-get clean
 
 # Return app user
