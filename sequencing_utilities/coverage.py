@@ -106,16 +106,13 @@ def plot_coverage(gff_files, left, right, scale=True, output=None,
     if output:
         savefig(output, transparent=True)
 
-def extract_strandsFromGff(gff_file, left, right, name=None, scale=True, downsample=0):
+def extract_strandsFromGff(gff_file, left, right, scale=True, downsample=0):
     """convert a gff file to a table of positions and reads
 
     Input:
     gff_file: gff file to read
     left: left position to start analysis
     right: right position to end analysis"""
-
-    if name is None:
-        name = gff_file.replace("_", " ").replace(".gtf", "").replace(".gff", "");
 
     # sometimes the first line is a comment which pandas can't handle
     skiprows = 0
@@ -154,7 +151,7 @@ def extract_strandsFromGff(gff_file, left, right, name=None, scale=True, downsam
         plus.index *= collapse_factor
         minus = minus.groupby(lambda x: x // collapse_factor).mean()
         minus.index *= collapse_factor
-    return plus,minus,name;
+    return plus,minus;
 
 def find_highCoverageRegions(plus,minus,coverage_min=1.5,coverage_max=5.0,
     points_min=200,consecutive_tol=10):
