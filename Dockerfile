@@ -20,8 +20,9 @@ USER root
 MAINTAINER Douglas McCloskey <dmccloskey87@gmail.com>
 
 # Install git
-RUN apt-get update && apt-get install -y wget \
-	unzip
+RUN apt-get update && apt-get install -y unzip
+#RUN apt-get update && apt-get install -y wget \
+#	unzip
 #RUN apt-get update && apt-get install -y git
 
 # Install sequtils from github
