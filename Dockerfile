@@ -13,6 +13,7 @@ FROM dmccloskey/cufflinks
 FROM dmccloskey/samtools
 FROM dmccloskey/python3scientific
 
+# switch to root for install
 USER root
 
 # File Author / Maintainer
