@@ -21,7 +21,6 @@ RUN apt-get update && apt-get install -y wget \
 	python2.7-dev \
 	python-numpy \
 	python-matplotlib \
-	wget \
 	python-pip
 	bowtie \
 	bowtie2 \
