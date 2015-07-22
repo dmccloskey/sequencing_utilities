@@ -26,6 +26,9 @@ RUN apt-get update && apt-get install -y wget \
 	bowtie2 \
 	samtools
 
+# Cleanup
+RUN apt-get clean
+
 # Install sequencing_utilities from github
 WORKDIR /usr/local/
 #RUN git clone https://github.com/dmccloskey/sequencing_utilities.git
@@ -70,22 +73,19 @@ RUN python setup.py install
 RUN chmod +x scripts/htseq-count
 RUN chmod +x scripts/htseq-qa
 
-# Install htseq-count python dependencies using pip
-RUN sudo pip install --upgrade pip
-RUN sudo pip install --no-cache-dir HTSeq
-
 # add htseq-count to path
 ENV PATH /usr/local/HTSeq-0.6.1p1/scripts:$PATH
 
 # Cleanup
 RUN rm -rf /usr/local/HTSeq-0.6.1p1.tar.gz
 
-# Final cleanup
-RUN apt-get clean
+# Install htseq-count python dependencies using pip
+USER user
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir HTSeq
 
 # Return app user
 WORKDIR $HOME
-USER user
 
 # Start at the console
 CMD ["python3"]
