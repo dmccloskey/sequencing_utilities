@@ -66,18 +66,18 @@ RUN rm -rf breseq-0.26.0-Linux-x86_64.tar.gz
 
 # Install htseq-count from http
 WORKDIR /usr/local/
-RUN wget --no-check-certificate https://pypi.python.org/packages/source/H/HTSeq/HTSeq-0.6.1p2.tar.gz
-RUN tar -zxvf HTSeq-0.6.1p2.tar.gz
-WORKDIR HTSeq-0.6.1p2/
+RUN wget --no-check-certificate https://pypi.python.org/packages/source/H/HTSeq/HTSeq-0.6.1p1.tar.gz
+RUN tar -zxvf HTSeq-0.6.1p1.tar.gz
+WORKDIR HTSeq-0.6.1p1/
 RUN python setup.py install
 RUN chmod +x scripts/htseq-count
 RUN chmod +x scripts/htseq-qa
 
 # add htseq-count to path
-ENV PATH /usr/local/HTSeq-0.6.1p2/scripts:$PATH
+ENV PATH /usr/local/HTSeq-0.6.1p1/scripts:$PATH
 
 # Cleanup
-RUN rm -rf /usr/local/HTSeq-0.6.1p2.tar.gz
+RUN rm -rf /usr/local/HTSeq-0.6.1p1.tar.gz
 
 # Install htseq-count python dependencies using pip
 USER user
