@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y wget \
 	python2.7-dev \
 	python-numpy \
 	python-matplotlib \
-	python-pip
+	python-pip \
 	bowtie \
 	bowtie2 \
 	samtools
