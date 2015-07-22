@@ -5,12 +5,6 @@
 FROM ubuntu:latest
 
 # Add images to base image
-FROM dmccloskey/bowtie1
-FROM dmccloskey/bowtie2
-FROM dmccloskey/htseq-count
-FROM dmccloskey/breseq
-FROM dmccloskey/cufflinks
-FROM dmccloskey/samtools
 FROM dmccloskey/python3scientific
 
 # switch to root for install
@@ -19,38 +13,75 @@ USER root
 # File Author / Maintainer
 MAINTAINER Douglas McCloskey <dmccloskey87@gmail.com>
 
-# Install git
-RUN apt-get update && apt-get install -y unzip
-#RUN apt-get update && apt-get install -y wget \
-#	unzip
-#RUN apt-get update && apt-get install -y git
+# Install dependencies and bowtie, bowtie2, and samtools
+RUN apt-get update && apt-get install -y wget \
+	unzip \
+	git \
+	build-essential \
+	python2.7-dev \
+	python-numpy \
+	python-matplotlib \
+	wget \
+	python-pip
+	bowtie \
+	bowtie2 \
+	samtools
 
-# Install sequtils from github
-WORKDIR /user/local/
+# Install sequencing_utilities from github
+WORKDIR /usr/local/
 #RUN git clone https://github.com/dmccloskey/sequencing_utilities.git
 RUN wget https://github.com/dmccloskey/sequencing_utilities/archive/master.zip
 RUN unzip master.zip
 RUN mv sequencing_utilities-master sequencing_utilities
-WORKDIR /user/local/sequencing_utilities/
+WORKDIR /usr/local/sequencing_utilities/
 RUN python3 setup.py install
 	
-## Create sequencing directory
-#WORKDIR /home/user/
-#RUN mkdir Sequencing
-#WORKDIR /home/user/Sequencing
-#RUN mkdir fastq #data directory
-#RUN mkdir indices #indices directory
-#RUN mkdir scripts #shell scripts directory
+# Cleanup
+RUN rm -rf /usr/local/sequencing_utilities
+RUN rm -rf /usr/local/master.zip
 
-## Copy shell scripts
-#RUN mv /user/local/sequencing_utilities/scripts/make_e_coli.sh /home/user/Sequencing/indices/make_e_coli.sh
-#RUN mv /user/local/sequencing_utilities/scripts/run_cuffdiff.sh /home/user/Sequencing/scripts/run_cuffdiff.sh
-#RUN mv /user/local/sequencing_utilities/scripts/run_reseq.sh /home/user/Sequencing/scripts/run_reseq.sh
-#RUN mv /user/local/sequencing_utilities/scripts/run_rnaseq.sh /home/user/Sequencing/scripts/run_rnaseq.sh
+# Install cufflinks from http
+WORKDIR /usr/local/
+RUN wget http://cole-trapnell-lab.github.io/cufflinks/assets/downloads/cufflinks-2.2.1.Linux_x86_64.tar.gz
+RUN tar -zxvf cufflinks-2.2.1.Linux_x86_64.tar.gz
+
+# add cufflinks to path
+ENV PATH /usr/local/cufflinks-2.2.1.Linux_x86_64:$PATH
 
 # Cleanup
-RUN rm -rf /user/local/sequencing_utilities
-RUN rm -rf /user/local/master.zip
+RUN rm -rf cufflinks-2.2.1.Linux_x86_64.tar.gz
+
+# Install breseq from http
+WORKDIR /usr/local/
+RUN wget http://github.com/barricklab/breseq/releases/download/v0.26.0/breseq-0.26.0-Linux-x86_64.tar.gz
+RUN tar -zxvf breseq-0.26.0-Linux-x86_64.tar.gz
+
+# add breseq to path
+ENV PATH /usr/local/breseq-0.26.0-Linux-x86_64/bin:$PATH
+
+# Cleanup
+RUN rm -rf breseq-0.26.0-Linux-x86_64.tar.gz
+
+# Install htseq-count from http
+WORKDIR /usr/local/
+RUN wget --no-check-certificate https://pypi.python.org/packages/source/H/HTSeq/HTSeq-0.6.1p1.tar.gz
+RUN tar -zxvf HTSeq-0.6.1p1.tar.gz
+WORKDIR HTSeq-0.6.1p1/
+RUN python setup.py install
+RUN chmod +x scripts/htseq-count
+RUN chmod +x scripts/htseq-qa
+
+# Install htseq-count python dependencies using pip
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir HTSeq
+
+# add htseq-count to path
+ENV PATH /usr/local/HTSeq-0.6.1p1/scripts:$PATH
+
+# Cleanup
+RUN rm -rf /usr/local/HTSeq-0.6.1p1.tar.gz
+
+# Final cleanup
 RUN apt-get clean
 
 # Return app user
