@@ -71,8 +71,8 @@ RUN chmod +x scripts/htseq-count
 RUN chmod +x scripts/htseq-qa
 
 # Install htseq-count python dependencies using pip
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir HTSeq
+RUN sudo pip install --upgrade pip
+RUN sudo pip install --no-cache-dir HTSeq
 
 # add htseq-count to path
 ENV PATH /usr/local/HTSeq-0.6.1p1/scripts:$PATH
