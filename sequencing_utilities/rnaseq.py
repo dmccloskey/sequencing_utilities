@@ -76,7 +76,7 @@ def process_rnaseq(base_input, organism, paired=True, insertsize=1000, threads=8
 
     #cufflinks_command = "%s -o %s/ -g %s -b %s -library-type fr-firststrand  %s.bam" % \
     #    (cufflinks, base_input, gff_index, fna_index, base_input)
-    cufflinks_command = "%s -o %s/ -g %s -library-type fr-firststrand  %s.bam" % \
+    cufflinks_command = "%s -o %s/ -g %s --library-type fr-firststrand  %s.bam" % \
         (cufflinks, base_input, gff_index, base_input)
 
     print(bowtie_command)
