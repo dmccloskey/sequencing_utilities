@@ -1,10 +1,7 @@
 # Dockerfile to build Sequencing_utilities container images
 # Based on Ubuntu
 
-# Set the base image to Ubuntu
-FROM ubuntu:latest
-
-# Add images to base image
+# Set the base image
 FROM dmccloskey/python3scientific
 
 # switch to root for install
@@ -79,13 +76,9 @@ ENV PATH /usr/local/HTSeq-0.6.1p1/scripts:$PATH
 # Cleanup
 RUN rm -rf /usr/local/HTSeq-0.6.1p1.tar.gz
 
-# Install htseq-count python dependencies using pip
-USER user
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir HTSeq
-
 # Return app user
 WORKDIR $HOME
+USER user
 
 # Start at the console
 CMD ["python3"]
