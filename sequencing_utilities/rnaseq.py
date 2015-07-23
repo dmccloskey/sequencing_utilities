@@ -92,7 +92,8 @@ def process_rnaseq(base_input, organism, paired=True, insertsize=1000, threads=8
 
     write_samfile_to_gff(base_input + ".bam", base_input + ".gff", flip=True, separate_strand=True)
     # remove samfiles
-    os.system("rm %s.unsorted.sam %s.sam" % (base_input, base_input))
+    #os.system("rm %s.unsorted.sam %s.sam" % (base_input, base_input))
+    os.system("rm %s.sam" % (base_input))
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
