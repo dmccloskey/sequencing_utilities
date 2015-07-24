@@ -6,14 +6,18 @@ from .sam2bam import convert_samfile
 from .makegff import write_samfile_to_gff
 
 
-def process_rnaseq(base_input, organism, paired=True, insertsize=1000, threads=8, trim3=3,
+def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../indexes/', paired=True, insertsize=1000, threads=8, trim3=3,
                    bowtie='bowtie',cufflinks='cufflinks',samtools='samtools',cuffdiff='cuffdiff',
-                   htseqcount='htseq-count',htseqqa = 'htseq-qa' ,indexes_dir='../indexes/'):
+                   htseqcount='htseq-count',htseqqa = 'htseq-qa'):
     '''Process RNA sequencing data from the commandline
 
     Input:
-    base_input = list of sample directories for each replicate in sample 1
+    basename = base name of replicate fastq files
+    dirname_I = name of the input directory holding the fastq files
+    dirname_O = name of the output directory
+    #base_input = list of sample directories for each replicate in sample 1
     organism = organism name
+    indexes_dir = directory of the bowtie indexes
 
     Output:
     
@@ -35,11 +39,17 @@ def process_rnaseq(base_input, organism, paired=True, insertsize=1000, threads=8
     '''
     # TODO: check to make sure that organism exists as in index
     # TODO write docstring
-    dirname, basename = os.path.split(base_input)
-    if len(dirname) == 0:
-        dirname = "."
+
+    # parse the input
+    #dirname, basename = os.path.split(base_input)
+    base_input = dirname_I + '/' + basename;
+    base_output = dirname_O + '/' + basename;
+    if not dirname_I or len(dirname_I) == 0:
+        dirname_I = ".";
+    if not dirname_O:
+        dirname_O = dirname_I;
     # files need to be extracted (fastq.gz should be deflated with gzip -d)
-    fastq_files = [i for i in os.listdir(dirname)
+    fastq_files = [i for i in os.listdir(dirname_I)
             if i.startswith(basename) and i.endswith(".fastq")]
     #gtf_index = indexes_dir + organism + ".gtf"
     gff_index = indexes_dir + organism + ".gff"
@@ -55,10 +65,10 @@ def process_rnaseq(base_input, organism, paired=True, insertsize=1000, threads=8
                 name_part = name_part[:-4]
             name_part = name_part.strip("_")
             if name_part == "R1":
-                p1.append(dirname + '/' + fastq_file)
+                p1.append(dirname_I + '/' + fastq_file)
                 #p1.append(fastq_file)
             elif name_part == "R2":
-                p2.append(dirname + '/' + fastq_file)
+                p2.append(dirname_I + '/' + fastq_file)
                 #p2.append(fastq_file)
         # TODO check to see if p1 and p2 are not empty
         assert(len(p1) == len(p2))
@@ -69,31 +79,31 @@ def process_rnaseq(base_input, organism, paired=True, insertsize=1000, threads=8
         p2_str = ",".join(p2)
         # TODO -m 0
         bowtie_command = "%s -X %d -n 2 -p %d -3 %d -S %s -1 %s -2 %s > %s.sam" % \
-            (bowtie, insertsize, threads, trim3, indexes_dir + organism, p1_str, p2_str, base_input)
+            (bowtie, insertsize, threads, trim3, indexes_dir + organism, p1_str, p2_str, base_output)
     else:
         f_str = ",".join(fastq_files)
-        bowtie_command = "%s -n 2 -p %d -S %s %s > %s.sam" % (bowtie, threads, indexes_dir + organism, f_str, base_input)
+        bowtie_command = "%s -n 2 -p %d -S %s %s > %s.sam" % (bowtie, threads, indexes_dir + organism, f_str, base_output)
 
     #cufflinks_command = "%s -o %s/ -g %s -b %s -library-type fr-firststrand  %s.bam" % \
-    #    (cufflinks, base_input, gff_index, fna_index, base_input)
+    #    (cufflinks, base_output, gff_index, fna_index, base_output)
     cufflinks_command = "%s -o %s/ -g %s --library-type fr-firststrand  %s.bam" % \
-        (cufflinks, base_input, gff_index, base_input)
+        (cufflinks, base_output, gff_index, base_output)
 
     print(bowtie_command)
     os.system(bowtie_command)
-    convert_samfile(base_input + ".sam", sort=True, force=True, samtools=samtools)
+    convert_samfile(base_output + ".sam", sort=True, force=True, samtools=samtools)
     ## make a sorted samfile
-    #os.system("%s view -h %s.bam > %s.unsorted.sam" % (samtools, base_input, base_input))
-    #os.system("sort -k 1,1 %s.unsorted.sam > %s.sam" % (base_input, base_input))
-    #os.system("%s -s reverse -i transcript_id %s.sam %s > %s.htseq_counts" % (htseqcount, base_input, gff_index, base_input))
-    #os.system("%s %s.sam" % (htseqqa,base_input))
+    #os.system("%s view -h %s.bam > %s.unsorted.sam" % (samtools, base_output, base_output))
+    #os.system("sort -k 1,1 %s.unsorted.sam > %s.sam" % (base_output, base_output))
+    #os.system("%s -s reverse -i transcript_id %s.sam %s > %s.htseq_counts" % (htseqcount, base_output, gff_index, base_output))
+    #os.system("%s %s.sam" % (htseqqa,base_output))
     print(cufflinks_command)
     os.system(cufflinks_command)
 
-    write_samfile_to_gff(base_input + ".bam", base_input + ".gff", flip=True, separate_strand=True)
+    write_samfile_to_gff(base_output + ".bam", base_output + ".gff", flip=True, separate_strand=True)
     # remove samfiles
-    #os.system("rm %s.unsorted.sam %s.sam" % (base_input, base_input))
-    os.system("rm %s.sam" % (base_input))
+    #os.system("rm %s.unsorted.sam %s.sam" % (base_output, base_output))
+    os.system("rm %s.sam" % (base_output))
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
