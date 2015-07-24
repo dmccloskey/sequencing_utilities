@@ -9,11 +9,11 @@ Ali Ebrahim for writing the original [sequtil](http://github.com/SBRG) library f
 
 Installation using Docker:
 --------------------------
-1. Install docker
+1. Install [docker](https://docs.docker.com/installation/)
 
-2. enter "docker pull dmccloskey/sequencing_utilities" to download the docker image
+2. at the command terminal, enter "docker pull dmccloskey/sequencing_utilities" to download the docker image from the [dmccloskey](https://hub.docker.com/u/dmccloskey/) dockerhub repo
 
-3. run "docker -i -t dmccloskey/sequencing_utilties" to bring up an interactive python session
+3. at the command terminal, enter "docker run -i -t --name=sequtils dmccloskey/sequencing_utilities" to bring up an interactive python session in a newly created docker container
 
 Installation from individual packages:
 ----------------
