@@ -51,8 +51,8 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
     # files need to be extracted (fastq.gz should be deflated with gzip -d)
     fastq_files = [i for i in os.listdir(dirname_I)
             if i.startswith(basename) and i.endswith(".fastq")]
-    #gtf_index = indexes_dir + organism + ".gtf"
-    gff_index = indexes_dir + organism + ".gff"
+    gff_index = indexes_dir + organism + ".gtf"
+    #gff_index = indexes_dir + organism + ".gff"
     fna_index = indexes_dir + organism + ".fna"
     if paired:
         p1 = []
@@ -65,10 +65,10 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
                 name_part = name_part[:-4]
             name_part = name_part.strip("_")
             if name_part == "R1":
-                p1.append(dirname_I + '/' + fastq_file)
+                p1.append(dirname_I + fastq_file)
                 #p1.append(fastq_file)
             elif name_part == "R2":
-                p2.append(dirname_I + '/' + fastq_file)
+                p2.append(dirname_I + fastq_file)
                 #p2.append(fastq_file)
         # TODO check to see if p1 and p2 are not empty
         assert(len(p1) == len(p2))

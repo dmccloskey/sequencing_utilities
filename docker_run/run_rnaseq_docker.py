@@ -35,11 +35,11 @@ def run_rnaseq_docker(basename_I,host_dirname_I,organism_I,host_indexes_dir_I,
     docker_run = ('sudo docker run --name=%s -v %s:%s -v %s:%s dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,host_dirname_I,docker_mount_1,host_indexes_dir_I,docker_mount_2,python_cmd));
     os.system(docker_run);
     #copy the gff file out of the docker container into a guest location
-    docker_cp = ("sudo docker cp %s:%s%s.bam %s" %(container_name,user_output,basename_I,local_dirname_I));
+    docker_cp = ("sudo docker cp %s%s.bam:%s %s" %(container_name,user_output,basename_I,local_dirname_I));
     os.system(docker_cp);
-    docker_cp = ("sudo docker cp %s:%s%s.gff %s" %(container_name,user_output,basename_I,local_dirname_I));
+    docker_cp = ("sudo docker cp %s%s.gff:%s %s" %(container_name,user_output,basename_I,local_dirname_I));
     os.system(docker_cp);
-    docker_cp = ("sudo docker cp %s:%s%s/ %s" %(container_name,user_output,basename_I,local_dirname_I));
+    docker_cp = ("sudo docker cp %s%s/:%s %s" %(container_name,user_output,basename_I,local_dirname_I));
     os.system(docker_cp);
     #change the permissions of the file
     #local_dirname = local_dirname_I.split('/')[-1];
