@@ -52,9 +52,9 @@ def run_rnaseq_docker(basename_I,host_dirname_I,organism_I,host_indexes_dir_I,
     os.system(cmd);
     cmd = ('sudo mv %s%s/ %s' %(local_dirname_I,basename_I,host_dirname_O));
     os.system(cmd);
-    #delete the local copy
-    cmd = ('sudo rm -rf %s' %(local_dirname_I));
-    os.system(cmd);
+    ##delete the local copy
+    #cmd = ('sudo rm -rf %s' %(local_dirname_I));
+    #os.system(cmd);
     #delete the container and the container content:
     cmd = ('sudo docker rm -v %s' %(container_name));
     os.system(cmd);
