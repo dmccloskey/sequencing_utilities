@@ -86,8 +86,8 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
 
     #cufflinks_command = "%s -o %s/ -g %s -b %s -library-type fr-firststrand  %s.bam" % \
     #    (cufflinks, base_output, gff_index, fna_index, base_output)
-    cufflinks_command = "%s -o %s/ -g %s --library-type fr-firststrand  %s.bam" % \
-        (cufflinks, base_output, gff_index, base_output)
+    cufflinks_command = "%s --library-type fr-firststrand -G %s -o %s/  %s.bam" % \
+        (cufflinks, gff_index, base_output,  base_output)
 
     print(bowtie_command)
     os.system(bowtie_command)
