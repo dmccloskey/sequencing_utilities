@@ -42,8 +42,8 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
 
     # parse the input
     #dirname, basename = os.path.split(base_input)
-    base_input = dirname_I + '/' + basename;
-    base_output = dirname_O + '/' + basename;
+    base_input = dirname_I + basename;
+    base_output = dirname_O + basename;
     if not dirname_I or len(dirname_I) == 0:
         dirname_I = ".";
     if not dirname_O:
