@@ -9,8 +9,8 @@ def run_rnaseq_docker(basename_I,host_dirname_I,organism_I,host_indexes_dir_I,
     INPUT:
     basename_I = base name of the fastq files
     host_dirname_I = directory for .fastq files
-    organism_I = 
-    host_indexes_dir_I
+    organism_I = name of index
+    host_indexes_dir_I = directory for indexes
     local_dirname_I = location for temporary output
     host_dirname_O = location for output on the host
 
@@ -53,3 +53,19 @@ def run_rnaseq_docker(basename_I,host_dirname_I,organism_I,host_indexes_dir_I,
     #delete the container and the container content:
     cmd = ('sudo docker rm -v %s' %(container_name));
     os.system(cmd);
+
+if __name__ == "__main__":
+    from argparse import ArgumentParser
+    parser = ArgumentParser("process RNAseq data")
+    parser.add_argument("basename_I", help="""base name of the fastq files""")
+    parser.add_argument("host_dirname_I", help="""directory for .fastq files""")
+    parser.add_argument("organism_I", help="""name of index""")
+    parser.add_argument("host_indexes_dir_I", help="""directory for indexes""")
+    parser.add_argument("local_dirname_I", help="""location for temporary output""")
+    parser.add_argument("host_dirname_O", help="""location for output on the host""")
+    parser.add_argument("threads_I", help="""number of processors to use""")
+    parser.add_argument("trim3_I", help="""trim 3 bases off of each end""")
+    args = parser.parse_args()
+    run_rnaseq_docker(args.basename_I,args.host_dirname_I,args.organism_I,args.host_indexes_dir_I,
+                      args.local_dirname_I,args.host_dirname_O,
+                      args.threads_I,args.trim3_I);
