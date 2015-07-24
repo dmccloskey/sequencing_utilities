@@ -78,11 +78,11 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
         p1_str = ",".join(p1)
         p2_str = ",".join(p2)
         # TODO -m 0
-        bowtie_command = "%s -X %d -n 2 -p %d -3 %d -S %s -1 %s -2 %s > %s.sam" % \
+        bowtie_command = "%s -X %d -n 2 -p %d -3 %d --verbose -S %s -1 %s -2 %s > %s.sam" % \
             (bowtie, insertsize, threads, trim3, indexes_dir + organism, p1_str, p2_str, base_output)
     else:
         f_str = ",".join(fastq_files)
-        bowtie_command = "%s -n 2 -p %d -S %s %s > %s.sam" % (bowtie, threads, indexes_dir + organism, f_str, base_output)
+        bowtie_command = "%s -n 2 -p %d --verbose -S %s %s > %s.sam" % (bowtie, threads, indexes_dir + organism, f_str, base_output)
 
     #cufflinks_command = "%s -o %s/ -g %s -b %s -library-type fr-firststrand  %s.bam" % \
     #    (cufflinks, base_output, gff_index, fna_index, base_output)
