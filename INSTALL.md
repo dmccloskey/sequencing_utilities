@@ -7,7 +7,15 @@ Credits:
 -----------------
 Ali Ebrahim for writing the original [sequtil](http://github.com/SBRG) library from which this is derived
 
-Getting started:
+Installation using Docker:
+--------------------------
+1. Install docker
+
+2. enter "docker pull dmccloskey/sequencing_utilities" to download the docker image
+
+3. run "docker -i -t dmccloskey/sequencing_utilties" to bring up an interactive python session
+
+Installation from individual packages:
 ----------------
 1.	Install R
 
@@ -42,3 +50,5 @@ scipy
 rpy2
 
 ...
+
+(see Dockerfile for a complete list of all packages and dependencies)

@@ -27,13 +27,12 @@ def run_rnaseq_docker(basename_I,host_dirname_I,organism_I,host_indexes_dir_I,
     #3. run docker
     docker_mount_1 = '/media/Resequencing_RNA/fastq/'
     docker_mount_2 = '/media/Resequencing_RNA/indexes/'
-    user_output = '/home/user/Resequencing_RNA/output/'
+    user_output = '/home/user/'
     container_name = 'rnaseq';
 
     rnaseq_cmd = ("process_rnaseq('%s','%s','%s','%s','%s',threads=%s,trim3=%s);" %(basename_I, docker_mount_1,user_output,organism_I,docker_mount_2,threads_I,trim3_I));
     python_cmd = ("from sequencing_utilities.rnaseq import process_rnaseq;%s" %(rnaseq_cmd));
-    #TODO
-    docker_run = ('sudo docker run --name=%s -v %s:%s -v %s:%s dmccloskey/sequencing_utilities %s' %(container_name,host_dirname_I,docker_mount_1,host_indexes_dir_I,docker_mount_2,python_cmd));
+    docker_run = ('sudo docker run --name=%s -v %s:%s -v %s:%s dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,host_dirname_I,docker_mount_1,host_indexes_dir_I,docker_mount_2,python_cmd));
     os.system(docker_run);
     #copy the gff file out of the docker container into a guest location
     docker_cp = ("sudo docker cp %s:%s %s" %(container_name,user_output,local_dirname_I));
