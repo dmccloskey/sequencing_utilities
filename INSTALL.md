@@ -13,6 +13,8 @@ Installation using Docker:
 
 2. at the command terminal, enter "docker pull dmccloskey/sequencing_utilities" to download the docker image from the [dmccloskey](https://hub.docker.com/u/dmccloskey/) dockerhub repo
 
+(Currently, there appears to be an issue with pushes of large image files to the dockerhub repository.  For now, the best way of generating the docker image is using the command "docker build -t dmccloskey/sequencing_utilities" while in a local directory with the Dockerfile (e.g., cd Dockerbuild where the Dockerbuild directory would contain only the Dockerfile).)
+
 3. at the command terminal, enter "docker run -i -t --name=sequtils dmccloskey/sequencing_utilities" to bring up an interactive python session in a newly created docker container
 
 Installation from individual packages:
