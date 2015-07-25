@@ -58,7 +58,7 @@ def run_cuffdiff(samples_dir_1,samples_dir_2,sample_name_1,sample_name_2,organis
     sample_1=','.join(samples_dir_1);
     sample_2=','.join(samples_dir_2);
 
-    gff_index = indexes_dir + organism + ".gff";
+    gff_index = indexes_dir + organism + ".gtf";
 
     cuffdiff_options = "--library-type %s --library-norm-method %s --FDR %s --num-threads %s" % \
         (library_type,library_norm_method,fdr,threads);
