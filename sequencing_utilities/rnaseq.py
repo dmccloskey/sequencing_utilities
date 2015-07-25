@@ -7,7 +7,7 @@ from .makegff import write_samfile_to_gff
 
 
 def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../indexes/', paired=True, insertsize=1000, threads=8, trim3=3,
-                   bowtie='bowtie',cufflinks='cufflinks',samtools='samtools',cuffdiff='cuffdiff',
+                   bowtie='bowtie2',cufflinks='cufflinks',samtools='samtools',cuffdiff='cuffdiff',
                    htseqcount='htseq-count',htseqqa = 'htseq-qa'):
     '''Process RNA sequencing data from the commandline
 
@@ -84,10 +84,10 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
         #p2_str = dirname_O + "R2.fastq";
         #cat_files(p2,p2_str);
         # TODO -m 0
-        bowtie_command = "%s -X %d -n 2 -p %d -3 %d --verbose -S %s -1 %s -2 %s %s.sam" % \
-            (bowtie, insertsize, threads, trim3, indexes_dir + organism, p1_str, p2_str, base_output)
-        #bowtie_command = "%s -X %d -n 2 -p %d -3 %d -x %s -1 %s -2 %s -S %s.sam" % \
+        #bowtie_command = "%s -X %d -n 2 -p %d -3 %d --verbose -S %s -1 %s -2 %s > %s.sam" % \
         #    (bowtie, insertsize, threads, trim3, indexes_dir + organism, p1_str, p2_str, base_output)
+        bowtie_command = "%s -X %d -p %d -3 %d -x %s -1 %s -2 %s -S %s.sam" % \
+            (bowtie, insertsize, threads, trim3, indexes_dir + organism, p1_str, p2_str, base_output)
     else:
         f_str = ",".join(fastq_files)
         bowtie_command = "%s -n 2 -p %d --verbose -S %s %s > %s.sam" % (bowtie, threads, indexes_dir + organism, f_str, base_output)
