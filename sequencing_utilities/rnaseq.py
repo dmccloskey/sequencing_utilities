@@ -77,13 +77,12 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
         assert(len(p1) > 0)
         p1.sort()
         p2.sort()
-        #p1_str = ",".join(p1)
-        #p2_str = ",".join(p2)
-        p1_str = dirname_O + "R1.fastq";
-        cat_files(p1,p1_str);
-        p2_str = dirname_O + "R2.fastq";
-        cat_files(p2,p2_str);
-        cat1_cmd = "cat ";
+        p1_str = ",".join(p1)
+        p2_str = ",".join(p2)
+        #p1_str = dirname_O + "R1.fastq";
+        #cat_files(p1,p1_str);
+        #p2_str = dirname_O + "R2.fastq";
+        #cat_files(p2,p2_str);
         # TODO -m 0
         bowtie_command = "%s -X %d -n 2 -p %d -3 %d --verbose -S %s -1 %s -2 %s > %s.sam" % \
             (bowtie, insertsize, threads, trim3, indexes_dir + organism, p1_str, p2_str, base_output)
@@ -118,9 +117,9 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
     # cleanup
     #os.system("rm %s.unsorted.sam %s.sam" % (base_output, base_output))
     os.system("rm %s.sam" % (base_output))
-    if p1_str and p2_str:
-        os.system("rm %s" % (p1_str));
-        os.system("rm %s" % (p2_str));
+    #if p1_str and p2_str:
+    #    os.system("rm %s" % (p1_str));
+    #    os.system("rm %s" % (p2_str));
 
 def cat_files(files_I,filename_O):
     """catenate file using the command prompt

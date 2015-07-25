@@ -3,10 +3,23 @@ from matplotlib.pyplot import subplot, fill_between, xlabel, xlim, \
     ylim, setp, savefig, figure
 
 
+"""Example usage
+from sequencing_utilities.coverage import find_highCoverageRegions
+from sequencing_utilities.coverage import extract_strandsFromGff
+from sequencing_utilities.coverage import plot_strands
+left,right=0,4640000
+gff = '/home/douglas/Documents/DNA_resequencing/fastq/ptsHIcrrEvo04EP/reference.gff'
+plus,minus,name=extract_strandsFromGff(gff,left,right,scale=True)
+plus_high_region_indices,minus_high_region_indices,plus_high_regions, minus_high_regions = find_highCoverageRegions(plus,minus,coverage_min=1.5,coverage_max=5.0,points_min=5000,consecutive_tol=20)
+plot_strands(plus_high_regions,minus_high_regions,left,right,scale=True, output='/home/douglas/Documents/DNA_resequencing/fastq/ptsHIcrrEvo04EP/ptsHIcrrEvo04EP_high.png',downsample=2000)
+plot_strands(plus,minus,left,right,scale=True, output='/home/douglas/Documents/DNA_resequencing/fastq/ptsHIcrrEvo04EP/ptsHIcrrEvo04EP.png',downsample=2000)
+"""
+
 def plot_coverage(gff_files, left, right, scale=True, output=None,
                   coverage_max=5.0, names=None, plot_points=2000):
     """plot coverage of a gff file
 
+    INPUT:
     gff_files: a list of gff files to read and plot
     left: left position of the plot
     right: right position of the plot
@@ -112,7 +125,14 @@ def extract_strandsFromGff(gff_file, left, right, scale=True, downsample=0):
     Input:
     gff_file: gff file to read
     left: left position to start analysis
-    right: right position to end analysis"""
+    right: right position to end analysis
+    scale: reads will be normalized to have 100 max
+    downsample: the number of positions to downsample to
+
+    Output:
+    plus: table [index,reads] for the plus strand
+    minus: table [index,reads] for the minus strand
+    """
 
     # sometimes the first line is a comment which pandas can't handle
     skiprows = 0
@@ -165,7 +185,6 @@ def find_highCoverageRegions(plus,minus,coverage_min=1.5,coverage_max=5.0,
     points_min: minimum number of consequtive points of a high coverage region
 
     Output:
-    regions: 
     '''
 
     # find indices that are within the min/max coverage
@@ -268,8 +287,22 @@ def record_highCoverageRegions(high_region,high_regions):
     
 
 def plot_strands(plus,minus,left,right,scale=True, output=None,
-                  coverage_max=5.0, names=None, downsample=2000):
-    '''Plot strand coverage'''
+                  coverage_max=5.0, downsample=2000):
+    '''Plot strand coverage
+
+    Input:
+    plus: table [index,reads] for the plus strand
+    minus: table [index,reads] for the minus strand
+    left: left position to start analysis
+    right: right position to end analysis
+    scale: reads will be normalized to have 100 max
+    output: output file
+    coverage_max: maximum read coverage to plot
+    downsample: the number of positions to downsample to
+
+    Output:
+    plus: table [index,reads] for the plus strand
+    minus: table [index,reads] for the minus strand'''
 
     ## fill missing values with 0
     #filler = pandas.Series([range(left, right + 1)])
