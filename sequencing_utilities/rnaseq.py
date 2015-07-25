@@ -95,7 +95,7 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
     os.system(bowtie_command)
 
     # convert .sam to .bam for cufflinks
-    convert_samfile(base_output + ".sam", sort=True, force=True, samtools=samtools)
+    convert_samfile(base_output + ".sam", sort=True, force=True, samtools=samtools,threads=threads)
 
     ## make a sorted samfile
     #os.system("%s view -h %s.bam > %s.unsorted.sam" % (samtools, base_output, base_output))
