@@ -69,8 +69,8 @@ def run_cuffdiff(samples_dir_1,samples_dir_2,sample_name_1,sample_name_2,organis
 
     # make the cuffdiff_command
     #cuffdiff [options] <transcripts.gtf> <sample1_replicate1.bam,...> <sample2_replicate1.bam,...> 
-    cuffdiff_command = "%s %s -o %s/%s -L %s %s %s %s %s " % \
-        (cuffdiff, cuffdiff_options, output_dir,samples_message, sample_name_1,sample_name_2,gff_index, sample_1,sample_2);
+    cuffdiff_command = "%s %s -o %s -L %s %s %s %s %s " % \
+        (cuffdiff, cuffdiff_options, output_dir, sample_name_1,sample_name_2,gff_index, sample_1,sample_2);
 
     # execute the command
     print(cuffdiff_command)

@@ -116,7 +116,7 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
 
     # cleanup
     #os.system("rm %s.unsorted.sam %s.sam" % (base_output, base_output))
-    os.system("rm %s.sam" % (base_output))
+    #os.system("rm %s.sam" % (base_output))
     #if p1_str and p2_str:
     #    os.system("rm %s" % (p1_str));
     #    os.system("rm %s" % (p2_str));

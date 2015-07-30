@@ -20,8 +20,8 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
     host_dirname_O = location for output on the host
 
     EXAMPLE:
-    sample_name_1 = 140818_11_OxicEvo04EcoliGlcM9_Broth-4
-    sample_name_2 = 140818_11_OxicEvo04EcoliGlcM9_Broth-4
+    samples_name_1 = 140818_11_OxicEvo04EcoliGlcM9_Broth-4
+    samples_name_2 = 140818_11_OxicEvo04EcoliGlcM9_Broth-4
     samples_host_dir_1 = [/media/proline/dmccloskey/Resequencing_RNA/fastq/140818_11_OxicEvo04EcoliGlcM9_Broth-4/140818_11_OxicEvo04EcoliGlcM9_Broth-4.bam] (remote storage location)
     samples_host_dir_2 = [/media/proline/dmccloskey/Resequencing_RNA/fastq/140818_11_OxicEvo04EcoliGlcM9_Broth-4/140818_11_OxicEvo04EcoliGlcM9_Broth-4.bam] (remote storage location)
     organism_I = e_coli
@@ -35,13 +35,25 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
     docker_mount_1 = '/media/Resequencing_RNA/fastq/'
     docker_mount_2 = '/media/Resequencing_RNA/indexes/'
     user_output = '/home/user/'
-    container_name = 'rnaseq';
+    container_name = 'cuffdiff';
+    
+    # make the samples mount for the container
+    samples_mount = "";
+    docker_name_dir_1 = [];
+    docker_name_dir_2 = [];
+    for sample in samples_host_dir_1:
+        samples_mount += "-v " + sample + ":" + docker_mount_1 + " ";
+        docker_name_dir_1.append(docker_mount_1 + '/' + sample.split('/')[-1])
+    for sample in samples_host_dir_2:
+        samples_mount += "-v " + sample + ":" + docker_mount_1 + " ";
+        docker_name_dir_2.append(docker_mount_1 + '/' + sample.split('/')[-1])
+    samples_mount = samples_mount[:-1];
 
     rnaseq_cmd = ("run_cuffdiff('%s','%s','%s','%s','%s',threads=%s,library_norm_method=%s,fdr=%s,library_type=%s,more_options=%s);" \
-        %(samples_host_dir_1,samples_host_dir_2,sample_name_1,sample_name_2,\
+        %(docker_name_dir_1,docker_name_dir_2,samples_name_1,samples_name_2,\
         organism_I,user_output,docker_mount_2,threads,library_norm_method,fdr,more_options));
     python_cmd = ("from sequencing_utilities.cuffdiff import run_cuffdiff;%s" %(rnaseq_cmd));
-    docker_run = ('sudo docker run --name=%s -v %s:%s -v %s:%s dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,host_dirname_I,docker_mount_1,host_indexes_dir_I,docker_mount_2,python_cmd));
+    docker_run = ('sudo docker run --name=%s %s -v %s:%s dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,samples_mount,host_indexes_dir_I,docker_mount_2,python_cmd));
     os.system(docker_run);
     #copy the gff file out of the docker container into a guest location
     docker_cp = ("sudo docker cp %s:%s%s.bam %s" %(container_name,user_output,basename_I,local_dirname_I));
