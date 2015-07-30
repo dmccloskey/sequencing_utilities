@@ -19,11 +19,9 @@ def convert_samfile(samfile, sort=False, force=False, verbose=True,samtools='sam
     if sort:
         command_strs = []
         # sam to unsorted bam
-        command_strs.append("%s view -bS -@ %s -o %s.unsorted.bam" %
-                            (samtools, threads, samfile, base_name))
+        command_strs.append("%s view -bS -@ %s -o %s.unsorted.bam" % (samtools, threads, samfile, base_name))
         # unsorted bam to sorted bam
-        command_strs.append("%s sort -@ %s %s.unsorted.bam %s" %
-                            (samtools, threads, base_name, base_name))
+        command_strs.append("%s sort -@ %s %s.unsorted.bam %s" % (samtools, threads, base_name, base_name))
         # creation of index
         command_strs.append("%s index %s" % (samtools, bamfile))
         # removal of unsorted bam
