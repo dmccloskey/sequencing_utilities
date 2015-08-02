@@ -93,7 +93,7 @@ def read_csv(filename):
 
 def main_singleFile():
     """process RNAseq data using docker
-    e.g. python3 run_rnaseq.py '140818_11_OxicEvo04EcoliGlcM9_Broth-4' '/media/proline/dmccloskey/Resequencing_RNA/fastq/140818_11_OxicEvo04EcoliGlcM9_Broth-4/' 'e_coli' '/media/proline/dmccloskey/Resequencing_RNA/indexes/' '/home/douglas/Documents/Resequencing_RNA/output/' '/media/proline/dmccloskey/Resequencing_RNA/fastq/140818_11_OxicEvo04EcoliGlcM9_Broth-4/' 2 3
+    e.g. python3 run_rnaseq_docker.py '140818_11_OxicEvo04EcoliGlcM9_Broth-4' '/media/proline/dmccloskey/Resequencing_RNA/fastq/140818_11_OxicEvo04EcoliGlcM9_Broth-4/' 'e_coli' '/media/proline/dmccloskey/Resequencing_RNA/indexes/' '/home/douglas/Documents/Resequencing_RNA/output/' '/media/proline/dmccloskey/Resequencing_RNA/fastq/140818_11_OxicEvo04EcoliGlcM9_Broth-4/' 2 3
     """
     from argparse import ArgumentParser
     parser = ArgumentParser("process RNAseq data")
@@ -112,7 +112,7 @@ def main_singleFile():
 
 def main_batchFile():
     """process RNAseq data using docker in batch
-    e.g. python3 run_rnaseq.py '/media/proline/dmccloskey/Resequencing_RNA/rnaseq_files.csv'
+    e.g. python3 run_rnaseq_docker.py '/media/proline/dmccloskey/Resequencing_RNA/rnaseq_files.csv' []
     """
     from argparse import ArgumentParser
     parser = ArgumentParser("process RNAseq data")
