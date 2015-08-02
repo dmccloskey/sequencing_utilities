@@ -62,8 +62,39 @@ def run_rnaseq_docker(basename_I,host_dirname_I,organism_I,host_indexes_dir_I,
     #delete the container and the container content:
     cmd = ('sudo docker rm -v %s' %(container_name));
     os.system(cmd);
+    
+def run_rnaseq_docker_fromCsvOrFile(filename_csv_I = None,filename_list_I = []):
+    '''Call run_rnaseq_docker on a list of basenames and directories
+    INPUT:
+    filename_list_I = [{basename_I:...,host_dirname_I:...,},...]
+    '''
+    if filename_csv_I:
+        filename_list_I = read_csv(filename_csv_I);
+    for row_cnt,row in enumerate(filename_list_I):
+        cmd = ("echo running rnaseq for basename %s" %(row['basename_I']));
+        os.system(cmd);
+        run_rnaseq_docker(row['basename_I'],row['host_dirname_I'],row['organism_I'],row['host_indexes_dir_I'],row['local_dirname_I'],row['host_dirname_O'],row['threads_I'],row['trim3_I']);
+         
+def read_csv(filename):
+    """read table data from csv file"""
+    data_O = [];
+    try:
+        with open(filename, 'r') as csvfile:
+            reader = csv.DictReader(csvfile);
+            try:
+                keys = reader.fieldnames;
+                for row in reader:
+                    data_O.append(row);
+            except csv.Error as e:
+                sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e));
+    except IOError as e:
+        sys.exit('%s does not exist' % e);
+    return data_O;
 
-if __name__ == "__main__":
+def main_singleFile():
+    """process RNAseq data using docker
+    e.g. python3 run_rnaseq.py '140818_11_OxicEvo04EcoliGlcM9_Broth-4' '/media/proline/dmccloskey/Resequencing_RNA/fastq/140818_11_OxicEvo04EcoliGlcM9_Broth-4/' 'e_coli' '/media/proline/dmccloskey/Resequencing_RNA/indexes/' '/home/douglas/Documents/Resequencing_RNA/output/' '/media/proline/dmccloskey/Resequencing_RNA/fastq/140818_11_OxicEvo04EcoliGlcM9_Broth-4/' 2 3
+    """
     from argparse import ArgumentParser
     parser = ArgumentParser("process RNAseq data")
     parser.add_argument("basename_I", help="""base name of the fastq files""")
@@ -78,3 +109,18 @@ if __name__ == "__main__":
     run_rnaseq_docker(args.basename_I,args.host_dirname_I,args.organism_I,args.host_indexes_dir_I,
                       args.local_dirname_I,args.host_dirname_O,
                       args.threads_I,args.trim3_I);
+
+def main_batchFile():
+    """process RNAseq data using docker in batch
+    e.g. python3 run_rnaseq.py '/media/proline/dmccloskey/Resequencing_RNA/rnaseq_files.csv'
+    """
+    from argparse import ArgumentParser
+    parser = ArgumentParser("process RNAseq data")
+    parser.add_argument("filename_csv_I", help="""list of files and parameters in a .csv""")
+    parser.add_argument("filename_list_I", help="""list of files and parameters e.g. [{basename_I:...,host_dirname_I:...,},...]""")
+    args = parser.parse_args()
+    run_rnaseq_docker_fromCsvOrFile(args.filename_csv_I,args.filename_list_I);
+
+if __name__ == "__main__":
+    #main_singleFile();
+    main_batchFile();
