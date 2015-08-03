@@ -115,7 +115,7 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
     write_samfile_to_gff(base_output + ".bam", base_output + ".gff", flip=True, separate_strand=True)
 
     # cleanup
-    #os.system("rm %s.unsorted.sam %s.sam" % (base_output, base_output))
+    #os.system("rm %s.unsorted.sam" % (base_output))
     #os.system("rm %s.sam" % (base_output))
     #if p1_str and p2_str:
     #    os.system("rm %s" % (p1_str));
