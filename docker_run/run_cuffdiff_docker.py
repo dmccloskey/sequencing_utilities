@@ -58,23 +58,16 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
     python_cmd = ("from sequencing_utilities.cuffdiff import run_cuffdiff;%s" %(rnaseq_cmd));
     docker_run = ('sudo docker run --name=%s %s -v %s:%s dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,samples_mount,host_indexes_dir_I,docker_mount_2,python_cmd));
     os.system(docker_run);
-    #copy the gff file out of the docker container into a guest location
-    docker_cp = ("sudo docker cp %s:%s%s.bam %s" %(container_name,user_output,basename_I,local_dirname_I));
-    os.system(docker_cp);
-    docker_cp = ("sudo docker cp %s:%s%s.gff %s" %(container_name,user_output,basename_I,local_dirname_I));
-    os.system(docker_cp);
-    docker_cp = ("sudo docker cp %s:%s%s/ %s" %(container_name,user_output,basename_I,local_dirname_I));
+    #copy the output directory file out of the docker container into a guest location
+    docker_cp = ("sudo docker cp %s:%s/ %s" %(container_name,user_output,local_dirname_I));
     os.system(docker_cp);
     #change the permissions of the file
     #local_dirname = local_dirname_I.split('/')[-1];
     cmd = ("sudo chmod -R 666 %s" %(local_dirname_I));
     os.system(cmd);
-    #copy the gff and bam file back to the original bam file location:
-    cmd = ('sudo mv %s%s.bam %s' %(local_dirname_I,basename_I,host_dirname_O));
+    #copy the output directory back to the original bam file location:
     os.system(cmd);
-    cmd = ('sudo mv %s%s.gff %s' %(local_dirname_I,basename_I,host_dirname_O));
-    os.system(cmd);
-    cmd = ('sudo mv %s%s/ %s' %(local_dirname_I,basename_I,host_dirname_O));
+    cmd = ('sudo mv %s%s/ %s' %(local_dirname_I,samples_message,host_dirname_O));
     os.system(cmd);
     ##delete the local copy
     #cmd = ('sudo rm -rf %s' %(local_dirname_I));
@@ -93,7 +86,12 @@ def run_cuffdiff_docker_fromCsvOrFile(filename_csv_I = None,filename_list_I = []
     for row_cnt,row in enumerate(filename_list_I):
         cmd = ("echo running cuffdiff for samples %s vs. %s" %(row['samples_name_1'],row['samples_name_2']));
         os.system(cmd);
-        run_cuffdiff_docker(['samples_host_dir_1'],['samples_host_dir_2'],['samples_name_1'],['samples_name_2'],['organism_I'],['host_indexes_dir_I'],['local_dirname_I'],['host_dirname_O'],['threads'],['library_norm_method'],['fdr'],['library_type'],['more_options']);
+        run_cuffdiff_docker(row['samples_host_dir_1'],row['samples_host_dir_2'],
+                            row['samples_name_1'],row['samples_name_2'],
+                            row['organism_I'],row['host_indexes_dir_I'],
+                            row['local_dirname_I'],row['host_dirname_O'],
+                            row['threads'],row['library_norm_method'],
+                            row['fdr'],row['library_type'],row['more_options']);
          
 def read_csv(filename):
     """read table data from csv file"""
