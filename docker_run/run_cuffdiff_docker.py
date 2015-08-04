@@ -51,12 +51,13 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
         samples_mount += "-v " + sample + ":" + docker_mount_1 + " ";
         docker_name_dir_2.append(docker_mount_1 + sample.split('/')[-1])
     samples_mount = samples_mount[:-1];
-
+    docker_name_dir_1_str = ','.join(docker_name_dir_1)
+    docker_name_dir_2_str = ','.join(docker_name_dir_2)
     if not more_options:
         more_options = 'None';
 
-    rnaseq_cmd = ("run_cuffdiff('%s','%s','%s','%s','%s','%s','%s',threads=%s,library_norm_method=%s,fdr=%s,library_type=%s,more_options=%s);" \
-        %(str(docker_name_dir_1),str(docker_name_dir_2),samples_name_1,samples_name_2,\
+    rnaseq_cmd = ("run_cuffdiff('[%s]','[%s]','%s','%s','%s','%s','%s',threads=%s,library_norm_method=%s,fdr=%s,library_type=%s,more_options=%s);" \
+        %(docker_name_dir_1_str,docker_name_dir_2_str,samples_name_1,samples_name_2,\
         organism_I,user_output,docker_mount_2,threads,library_norm_method,fdr,library_type,more_options));
     python_cmd = ("from sequencing_utilities.cuffdiff import run_cuffdiff;%s" %(rnaseq_cmd));
     docker_run = ('sudo docker run --name=%s %s -v %s:%s dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,samples_mount,host_indexes_dir_I,docker_mount_2,python_cmd));
