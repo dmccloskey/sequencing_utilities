@@ -22,8 +22,8 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
     EXAMPLE:
     samples_name_1 = 140818_11_OxicEvo04EcoliGlcM9_Broth-4
     samples_name_2 = 140716_0_OxicEvo04pgiEcoliGlcM9_Broth-1
-    samples_host_dir_1 = [/media/proline/dmccloskey/Resequencing_RNA/fastq/140818_11_OxicEvo04EcoliGlcM9_Broth-4/140818_11_OxicEvo04EcoliGlcM9_Broth-4.bam] (remote storage location)
-    samples_host_dir_2 = [/media/proline/dmccloskey/Resequencing_RNA/fastq/140716_0_OxicEvo04pgiEcoliGlcM9_Broth-1/140716_0_OxicEvo04pgiEcoliGlcM9_Broth-1.bam] (remote storage location)
+    samples_host_dir_1 = /media/proline/dmccloskey/Resequencing_RNA/fastq/140818_11_OxicEvo04EcoliGlcM9_Broth-4/140818_11_OxicEvo04EcoliGlcM9_Broth-4.bam (remote storage location)
+    samples_host_dir_2 = /media/proline/dmccloskey/Resequencing_RNA/fastq/140716_0_OxicEvo04pgiEcoliGlcM9_Broth-1/140716_0_OxicEvo04pgiEcoliGlcM9_Broth-1.bam (remote storage location)
     organism_I = e_coli
     host_indexes_dir_I = /media/proline/dmccloskey/Resequencing_RNA/indexes/ (remote storage location)
     local_dirname_I = /home/douglas/Documents/Resequencing_RNA/ (local host location)
@@ -34,17 +34,20 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
     #3. run docker
     docker_mount_1 = '/media/Resequencing_RNA/fastq/'
     docker_mount_2 = '/media/Resequencing_RNA/indexes/'
-    user_output = '/home/user/'
+
+    samples_message = samples_name_1 + "_vs_" + samples_name_2;
+
+    user_output = '/home/user/' + samples_message;
     container_name = 'cuffdiff';
     
     # make the samples mount for the container
     samples_mount = "";
     docker_name_dir_1 = [];
     docker_name_dir_2 = [];
-    for sample in samples_host_dir_1:
+    for sample in samples_host_dir_1.split(','):
         samples_mount += "-v " + sample + ":" + docker_mount_1 + " ";
         docker_name_dir_1.append(docker_mount_1 + '/' + sample.split('/')[-1])
-    for sample in samples_host_dir_2:
+    for sample in samples_host_dir_2.split(','):
         samples_mount += "-v " + sample + ":" + docker_mount_1 + " ";
         docker_name_dir_2.append(docker_mount_1 + '/' + sample.split('/')[-1])
     samples_mount = samples_mount[:-1];
