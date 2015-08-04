@@ -128,7 +128,7 @@ def main_singleFile():
     parser.add_argument("library_type", help="""the type of library used""")
     parser.add_argument("more_options", help="""string representation of additional cuffdiff options""")
     args = parser.parse_args()
-    run_rnaseq_docker(args.samples_host_dir_1,args.samples_host_dir_2,
+    run_cuffdiff_docker(args.samples_host_dir_1,args.samples_host_dir_2,
                       args.samples_name_1,args.samples_name_2,
                       args.organism_I,args.host_indexes_dir_I,
                       args.local_dirname_I,args.host_dirname_O,
@@ -138,14 +138,14 @@ def main_singleFile():
 
 def main_batchFile():
     """process RNAseq data using docker in batch
-    e.g. python3 run_rnaseq_docker.py '/media/proline/dmccloskey/Resequencing_RNA/rnaseq_files.csv' []
+    e.g. python3 run_cuffdiff_docker.py '/media/proline/dmccloskey/Resequencing_RNA/cuffdiff_files.csv' []
     """
     from argparse import ArgumentParser
     parser = ArgumentParser("process RNAseq data")
     parser.add_argument("filename_csv_I", help="""list of files and parameters in a .csv""")
     parser.add_argument("filename_list_I", help="""list of files and parameters e.g. [{sample_name_1:...,sample_name_2:...,},...]""")
     args = parser.parse_args()
-    run_rnaseq_docker_fromCsvOrFile(args.filename_csv_I,args.filename_list_I);
+    run_cuffdiff_docker_fromCsvOrFile(args.filename_csv_I,args.filename_list_I);
 
 if __name__ == "__main__":
     #main_singleFile();
