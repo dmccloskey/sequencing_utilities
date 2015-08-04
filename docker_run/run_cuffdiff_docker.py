@@ -27,7 +27,7 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
     organism_I = e_coli
     host_indexes_dir_I = /media/proline/dmccloskey/Resequencing_RNA/indexes/ (remote storage location)
     local_dirname_I = /home/douglas/Documents/Resequencing_RNA/ (local host location)
-    host_dirname_O = /media/proline/dmccloskey/Resequencing_RNA/fastq/140818_11_OxicEvo04EcoliGlcM9_Broth-4/ (remote storage location)
+    host_dirname_O = /media/proline/dmccloskey/Resequencing_RNA/fastq/ (remote storage location)
     '''
     #1. create a container named rnaseq using sequencing utilities
     #2. mount the host file
