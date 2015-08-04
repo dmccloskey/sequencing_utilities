@@ -37,7 +37,7 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
 
     samples_message = samples_name_1 + "_vs_" + samples_name_2;
 
-    user_output = '/home/user/' + samples_message;
+    user_output = '/home/user/'
     container_name = 'cuffdiff';
     
     # make the samples mount for the container
@@ -64,7 +64,7 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
     os.system("echo %s" %(docker_run));
     os.system(docker_run);
     #copy the output directory file out of the docker container into a guest location
-    docker_cp = ("sudo docker cp %s:%s/ %s" %(container_name,user_output,local_dirname_I));
+    docker_cp = ("sudo docker cp %s:%s/ %s/%s" %(container_name,user_output,local_dirname_I,samples_message));
     os.system(docker_cp);
     #change the permissions of the file
     #local_dirname = local_dirname_I.split('/')[-1];
@@ -72,7 +72,7 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
     os.system(cmd);
     #copy the output directory back to the original bam file location:
     os.system(cmd);
-    cmd = ('sudo mv %s%s/ %s' %(local_dirname_I,samples_message,host_dirname_O));
+    cmd = ('sudo mv %s/%s/ %s' %(local_dirname_I,samples_message,host_dirname_O));
     os.system(cmd);
     ##delete the local copy
     #cmd = ('sudo rm -rf %s' %(local_dirname_I));
