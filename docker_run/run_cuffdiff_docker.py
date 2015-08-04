@@ -56,7 +56,7 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
     if not more_options:
         more_options = 'None';
 
-    rnaseq_cmd = ("run_cuffdiff('[%s]','[%s]','%s','%s','%s','%s','%s',threads=%s,library_norm_method=%s,fdr=%s,library_type=%s,more_options=%s);" \
+    rnaseq_cmd = ("run_cuffdiff(['%s'],['%s'],'%s','%s','%s','%s',indexes_dir='%s',threads=%s,library_norm_method='%s',fdr=%s,library_type='%s',more_options=%s);" \
         %(docker_name_dir_1_str,docker_name_dir_2_str,samples_name_1,samples_name_2,\
         organism_I,user_output,docker_mount_2,threads,library_norm_method,fdr,library_type,more_options));
     python_cmd = ("from sequencing_utilities.cuffdiff import run_cuffdiff;%s" %(rnaseq_cmd));
