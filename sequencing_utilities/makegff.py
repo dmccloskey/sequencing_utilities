@@ -6,8 +6,10 @@ from warnings import warn
 
 from numpy import zeros, roll
 
-import pysam
-
+try:
+    import pysam
+except ImportError as e:
+    print(e);
 
 def count_coverage(samfile, flip=False, include_insert=False):
     """counts coverage per base in a strand-specific manner

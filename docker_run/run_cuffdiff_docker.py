@@ -21,9 +21,9 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
 
     EXAMPLE:
     samples_name_1 = 140818_11_OxicEvo04EcoliGlcM9_Broth-4
-    samples_name_2 = 140818_11_OxicEvo04EcoliGlcM9_Broth-4
+    samples_name_2 = 140716_0_OxicEvo04pgiEcoliGlcM9_Broth-1
     samples_host_dir_1 = [/media/proline/dmccloskey/Resequencing_RNA/fastq/140818_11_OxicEvo04EcoliGlcM9_Broth-4/140818_11_OxicEvo04EcoliGlcM9_Broth-4.bam] (remote storage location)
-    samples_host_dir_2 = [/media/proline/dmccloskey/Resequencing_RNA/fastq/140818_11_OxicEvo04EcoliGlcM9_Broth-4/140818_11_OxicEvo04EcoliGlcM9_Broth-4.bam] (remote storage location)
+    samples_host_dir_2 = [/media/proline/dmccloskey/Resequencing_RNA/fastq/140716_0_OxicEvo04pgiEcoliGlcM9_Broth-1/140716_0_OxicEvo04pgiEcoliGlcM9_Broth-1.bam] (remote storage location)
     organism_I = e_coli
     host_indexes_dir_I = /media/proline/dmccloskey/Resequencing_RNA/indexes/ (remote storage location)
     local_dirname_I = /home/douglas/Documents/Resequencing_RNA/ (local host location)
@@ -79,19 +79,74 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
     #delete the container and the container content:
     cmd = ('sudo docker rm -v %s' %(container_name));
     os.system(cmd);
+    
+def run_cuffdiff_docker_fromCsvOrFile(filename_csv_I = None,filename_list_I = []):
+    '''Call run_cuffdiff_docker on a list of parameters
+    INPUT:
+    filename_list_I = [{sample_name_1:...,sample_name_2:...,},...]
+    '''
+    if filename_csv_I:
+        filename_list_I = read_csv(filename_csv_I);
+    for row_cnt,row in enumerate(filename_list_I):
+        cmd = ("echo running cuffdiff for samples %s vs. %s" %(row['sample_name_1'],row['sample_name_2']));
+        os.system(cmd);
+        run_cuffdiff_docker(['samples_host_dir_1'],['samples_host_dir_2'],['samples_name_1'],['samples_name_2'],['organism_I'],['host_indexes_dir_I'],['local_dirname_I'],['host_dirname_O'],['threads'],['library_norm_method'],['fdr'],['library_type'],['more_options']);
+         
+def read_csv(filename):
+    """read table data from csv file"""
+    data_O = [];
+    try:
+        with open(filename, 'r') as csvfile:
+            reader = csv.DictReader(csvfile);
+            try:
+                keys = reader.fieldnames;
+                for row in reader:
+                    data_O.append(row);
+            except csv.Error as e:
+                sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e));
+    except IOError as e:
+        sys.exit('%s does not exist' % e);
+    return data_O;
 
-if __name__ == "__main__":
+def main_singleFile():
+    """Run cuffdiff using docker
+    e.g. python3 run_cuffdiff_docker.py ...
+    """
     from argparse import ArgumentParser
     parser = ArgumentParser("process RNAseq data")
-    parser.add_argument("basename_I", help="""base name of the fastq files""")
-    parser.add_argument("host_dirname_I", help="""directory for .fastq files""")
+    parser.add_argument("samples_host_dir_1", help="""list of .bam files for samples_1""")
+    parser.add_argument("samples_host_dir_2", help="""list of .bam files for samples_2""")
+    parser.add_argument("samples_name_1", help="""sample name for samples_1""")
+    parser.add_argument("samples_name_2", help="""sample name for samples_2""")
     parser.add_argument("organism_I", help="""name of index""")
     parser.add_argument("host_indexes_dir_I", help="""directory for indexes""")
     parser.add_argument("local_dirname_I", help="""location for temporary output""")
     parser.add_argument("host_dirname_O", help="""location for output on the host""")
-    parser.add_argument("threads_I", help="""number of processors to use""")
-    parser.add_argument("trim3_I", help="""trim 3 bases off of each end""")
+    parser.add_argument("threads", help="""number of processors to use""")
+    parser.add_argument("library_norm_method", help="""method for library normalization""")
+    parser.add_argument("fdr", help="""false discover rate""")
+    parser.add_argument("library_type", help="""the type of library used""")
+    parser.add_argument("more_options", help="""string representation of additional cuffdiff options""")
     args = parser.parse_args()
-    run_rnaseq_docker(args.basename_I,args.host_dirname_I,args.organism_I,args.host_indexes_dir_I,
+    run_rnaseq_docker(args.samples_host_dir_1,args.samples_host_dir_2,
+                      args.samples_name_1,args.samples_name_2,
+                      args.organism_I,args.host_indexes_dir_I,
                       args.local_dirname_I,args.host_dirname_O,
-                      args.threads_I,args.trim3_I);
+                      args.threads,args.library_norm_method,
+                      args.fdr,args.library_type,args.more_options);
+
+
+def main_batchFile():
+    """process RNAseq data using docker in batch
+    e.g. python3 run_rnaseq_docker.py '/media/proline/dmccloskey/Resequencing_RNA/rnaseq_files.csv' []
+    """
+    from argparse import ArgumentParser
+    parser = ArgumentParser("process RNAseq data")
+    parser.add_argument("filename_csv_I", help="""list of files and parameters in a .csv""")
+    parser.add_argument("filename_list_I", help="""list of files and parameters e.g. [{sample_name_1:...,sample_name_2:...,},...]""")
+    args = parser.parse_args()
+    run_rnaseq_docker_fromCsvOrFile(args.filename_csv_I,args.filename_list_I);
+
+if __name__ == "__main__":
+    #main_singleFile();
+    main_batchFile();
