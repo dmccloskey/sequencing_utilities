@@ -1,14 +1,14 @@
-sequencing_utilities
-========================
-Douglas McCloskey
------------------
+#sequencing_utilities
 
-Credits:
------------------
+##Douglas McCloskey
+
+
+##Credits:
+
 Ali Ebrahim for writing the original [sequtil](http://github.com/SBRG) library from which this is derived
 
-Installation using Docker:
---------------------------
+###Installation using Docker:
+
 1. Install [docker](https://docs.docker.com/installation/)
 
 2. at the command terminal, enter "docker pull dmccloskey/sequencing_utilities" to download the docker image from the [dmccloskey](https://hub.docker.com/u/dmccloskey/) dockerhub repo
@@ -17,16 +17,16 @@ Installation using Docker:
 
 3. at the command terminal, enter "docker run -i -t --name=sequtils dmccloskey/sequencing_utilities" to bring up an interactive python session in a newly created docker container
 
-Installation from individual packages:
-----------------
+###Installation from individual packages:
+
 1.	Install R
 
 2.	Install python and dependencies
 
 3.  Install Bowtie, Bowtie2, Breseq, Samtools, and Cufflinks
 
-Dependencies:
-------------
+###Dependencies:
+
 Python 3.4+
 
 [Bowtie](https://github.com/BenLangmead/bowtie)
