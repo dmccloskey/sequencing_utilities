@@ -104,9 +104,9 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
     #os.system("%s %s.sam" % (htseqqa,base_output))
     
     # generate the cufflinks command and call cufflinks:
-    #cufflinks_command = "%s -o %s/ -g %s -b %s -library-type fr-firststrand  %s.bam" % \
+    #cufflinks_command = "%s -o %s/ -g %s -b %s -library-type fr-firststrand %s.bam" % \
     #    (cufflinks, base_output, gff_index, fna_index, base_output)
-    cufflinks_command = "%s --library-type fr-firststrand -p %s -G %s -o %s/  %s.bam" % \
+    cufflinks_command = "%s --library-type fr-firststrand -p %s -G %s -o %s/ %s.bam" % \
         (cufflinks, threads, gff_index, base_output,  base_output)
     print(cufflinks_command)
     os.system(cufflinks_command)
