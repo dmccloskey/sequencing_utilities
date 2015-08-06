@@ -46,11 +46,11 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
     docker_name_dir_2 = [];
     for sample in samples_host_dir_1.split(','):
         filename = sample.split('/')[-1];
-        samples_mount += "-v " + sample + ":" + docker_mount_1+ "/" + filename + " ";
+        samples_mount += "-v " + sample + ":" + docker_mount_1 + filename + " ";
         docker_name_dir_1.append(docker_mount_1 + sample.split('/')[-1])
     for sample in samples_host_dir_2.split(','):
         filename = sample.split('/')[-1];
-        samples_mount += "-v " + sample + ":" + docker_mount_1 + "/" + filename + " ";
+        samples_mount += "-v " + sample + ":" + docker_mount_1 + filename + " ";
         docker_name_dir_2.append(docker_mount_1 + sample.split('/')[-1])
     samples_mount = samples_mount[:-1];
     docker_name_dir_1_str = ','.join(docker_name_dir_1)
@@ -66,7 +66,8 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
     os.system("echo %s" %(docker_run));
     os.system(docker_run);
     #copy the output directory file out of the docker container into a guest location
-    docker_cp = ("sudo docker cp %s:%s/ %s/%s" %(container_name,user_output,local_dirname_I,samples_message));
+    #docker_cp = ("sudo docker cp %s:%s/ %s/%s" %(container_name,user_output,local_dirname_I,samples_message));
+    docker_cp = ("sudo docker cp %s:%s/ %s/" %(container_name,user_output,local_dirname_I));
     os.system(docker_cp);
     #change the permissions of the file
     #local_dirname = local_dirname_I.split('/')[-1];
