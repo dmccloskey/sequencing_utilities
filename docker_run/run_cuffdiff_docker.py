@@ -45,10 +45,12 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
     docker_name_dir_1 = [];
     docker_name_dir_2 = [];
     for sample in samples_host_dir_1.split(','):
-        samples_mount += "-v " + sample + ":" + docker_mount_1 + " ";
+        filename = sample.split('/')[-1];
+        samples_mount += "-v " + sample + ":" + docker_mount_1+ "/" + filename + " ";
         docker_name_dir_1.append(docker_mount_1 + sample.split('/')[-1])
     for sample in samples_host_dir_2.split(','):
-        samples_mount += "-v " + sample + ":" + docker_mount_1 + " ";
+        filename = sample.split('/')[-1];
+        samples_mount += "-v " + sample + ":" + docker_mount_1 + "/" + filename + " ";
         docker_name_dir_2.append(docker_mount_1 + sample.split('/')[-1])
     samples_mount = samples_mount[:-1];
     docker_name_dir_1_str = ','.join(docker_name_dir_1)
