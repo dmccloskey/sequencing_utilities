@@ -32,35 +32,35 @@ def run_rnaseq_docker(basename_I,host_dirname_I,organism_I,host_indexes_dir_I,
 
     rnaseq_cmd = ("process_rnaseq('%s','%s','%s','%s','%s',threads=%s,trim3=%s);" %(basename_I, docker_mount_1,user_output,organism_I,docker_mount_2,threads_I,trim3_I));
     python_cmd = ("from sequencing_utilities.rnaseq import process_rnaseq;%s" %(rnaseq_cmd));
-    docker_run = ('sudo docker run --name=%s -v %s:%s -v %s:%s dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,host_dirname_I,docker_mount_1,host_indexes_dir_I,docker_mount_2,python_cmd));
+    docker_run = ('docker run --name=%s -v %s:%s -v %s:%s dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,host_dirname_I,docker_mount_1,host_indexes_dir_I,docker_mount_2,python_cmd));
     os.system(docker_run);
     #copy the gff file out of the docker container into a guest location
-    docker_cp = ("sudo docker cp %s:%s%s.bam %s" %(container_name,user_output,basename_I,local_dirname_I));
+    docker_cp = ("docker cp %s:%s%s.bam %s" %(container_name,user_output,basename_I,local_dirname_I));
     os.system(docker_cp);
-    docker_cp = ("sudo docker cp %s:%s%s.gff %s" %(container_name,user_output,basename_I,local_dirname_I));
+    docker_cp = ("docker cp %s:%s%s.gff %s" %(container_name,user_output,basename_I,local_dirname_I));
     os.system(docker_cp);
-    docker_cp = ("sudo docker cp %s:%s%s.sam %s" %(container_name,user_output,basename_I,local_dirname_I));
+    docker_cp = ("docker cp %s:%s%s.sam %s" %(container_name,user_output,basename_I,local_dirname_I));
     os.system(docker_cp);
-    docker_cp = ("sudo docker cp %s:%s%s/ %s" %(container_name,user_output,basename_I,local_dirname_I));
+    docker_cp = ("docker cp %s:%s%s/ %s" %(container_name,user_output,basename_I,local_dirname_I));
     os.system(docker_cp);
     #change the permissions of the file
     #local_dirname = local_dirname_I.split('/')[-1];
-    cmd = ("sudo chmod -R 666 %s" %(local_dirname_I));
+    cmd = ("chmod -R 666 %s" %(local_dirname_I));
     os.system(cmd);
     #copy the gff and bam file back to the original bam file location:
-    cmd = ('sudo mv %s%s.bam %s' %(local_dirname_I,basename_I,host_dirname_O));
+    cmd = ('mv %s%s.bam %s' %(local_dirname_I,basename_I,host_dirname_O));
     os.system(cmd);
-    cmd = ('sudo mv %s%s.gff %s' %(local_dirname_I,basename_I,host_dirname_O));
+    cmd = ('mv %s%s.gff %s' %(local_dirname_I,basename_I,host_dirname_O));
     os.system(cmd);
-    cmd = ('sudo mv %s%s.sam %s' %(local_dirname_I,basename_I,host_dirname_O));
+    cmd = ('mv %s%s.sam %s' %(local_dirname_I,basename_I,host_dirname_O));
     os.system(cmd);
-    cmd = ('sudo mv %s%s/ %s' %(local_dirname_I,basename_I,host_dirname_O));
+    cmd = ('mv %s%s/ %s' %(local_dirname_I,basename_I,host_dirname_O));
     os.system(cmd);
     ##delete the local copy
-    #cmd = ('sudo rm -rf %s' %(local_dirname_I));
+    #cmd = ('rm -rf %s' %(local_dirname_I));
     #os.system(cmd);
     #delete the container and the container content:
-    cmd = ('sudo docker rm -v %s' %(container_name));
+    cmd = ('docker rm -v %s' %(container_name));
     os.system(cmd);
     
 def run_rnaseq_docker_fromCsvOrFile(filename_csv_I = None,filename_list_I = []):

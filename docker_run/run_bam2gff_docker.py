@@ -23,23 +23,23 @@ def run_bam2gff_docker(host_bam_I,local_gff_I,host_gff_O):
     container_name = 'bam2gff';
 
     python_cmd = ("from sequencing_utilities.makegff import write_samfile_to_gff;write_samfile_to_gff('%s','%s',separate_strand=False);" %(docker_mount_1,user_output));
-    docker_run = ('sudo docker run --name=%s -v %s:%s dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,docker_mount_1,host_bam_I,python_cmd));
+    docker_run = ('docker run --name=%s -v %s:%s dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,docker_mount_1,host_bam_I,python_cmd));
     os.system(docker_run);
     #copy the gff file out of the docker container into a guest location
-    docker_cp = ("sudo docker cp %s:%s %s" %(container_name,user_output,local_gff_I));
+    docker_cp = ("docker cp %s:%s %s" %(container_name,user_output,local_gff_I));
     os.system(docker_cp);
     #change the permissions of the file
     gff_filename = local_gff_I.split('/')[-1];
-    cmd = ("sudo chmod 666 %s" %(local_gff_I));
+    cmd = ("chmod 666 %s" %(local_gff_I));
     os.system(cmd);
     #copy the gff file back to the original bam file location:
-    cmd = ('sudo mv %s/%s %s' %(local_gff_I,gff_filename,host_gff_O));
+    cmd = ('mv %s/%s %s' %(local_gff_I,gff_filename,host_gff_O));
     os.system(cmd);
     #delete the local copy
-    cmd = ('sudo rm -rf %s' %(local_gff_I));
+    cmd = ('rm -rf %s' %(local_gff_I));
     os.system(cmd);
     #delete the container and the container content:
-    cmd = ('sudo docker rm -v %s' %(container_name));
+    cmd = ('docker rm -v %s' %(container_name));
     os.system(cmd);
 
 def run_bam2gff_docker_fromCsvOrFile(filename_csv_I = None,filename_list_I = []):

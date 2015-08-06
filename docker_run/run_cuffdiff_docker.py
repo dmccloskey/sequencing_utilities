@@ -37,7 +37,7 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
 
     samples_message = samples_name_1 + "_vs_" + samples_name_2;
 
-    user_output = '/home/user/'
+    user_output = '/home/user/'+sample_message;
     container_name = 'cuffdiff';
     
     # make the samples mount for the container
@@ -62,25 +62,26 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
         %(docker_name_dir_1_str,docker_name_dir_2_str,samples_name_1,samples_name_2,\
         organism_I,user_output,docker_mount_2,threads,library_norm_method,fdr,library_type,more_options));
     python_cmd = ("from sequencing_utilities.cuffdiff import run_cuffdiff;%s" %(rnaseq_cmd));
-    docker_run = ('sudo docker run --name=%s %s -v %s:%s dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,samples_mount,host_indexes_dir_I,docker_mount_2,python_cmd));
+    docker_run = ('docker run -u=root --name=%s %s -v %s:%s dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,samples_mount,host_indexes_dir_I,docker_mount_2,python_cmd));
     os.system("echo %s" %(docker_run));
     os.system(docker_run);
     #copy the output directory file out of the docker container into a guest location
-    docker_cp = ("sudo docker cp %s:%s/ %s/%s" %(container_name,user_output,local_dirname_I,samples_message));
+    docker_cp = ("docker cp %s:%s/ %s/%s" %(container_name,user_output,local_dirname_I,samples_message));
     os.system(docker_cp);
     #change the permissions of the file
     #local_dirname = local_dirname_I.split('/')[-1];
-    cmd = ("sudo chmod -R 666 %s" %(local_dirname_I));
+    cmd = ("chmod -R 666 %s" %(local_dirname_I));
     os.system(cmd);
     #copy the output directory back to the original bam file location:
     os.system(cmd);
-    cmd = ('sudo mv %s/%s/ %s' %(local_dirname_I,samples_message,host_dirname_O));
+    cmd = ('mv %s/%s/ %s' %(local_dirname_I,samples_message,host_dirname_O));
+    cmd = ('mv %s/%s/ %s' %(local_dirname_I,samples_message,host_dirname_O));
     os.system(cmd);
     ##delete the local copy
-    #cmd = ('sudo rm -rf %s' %(local_dirname_I));
+    #cmd = ('rm -rf %s' %(local_dirname_I));
     #os.system(cmd);
     #delete the container and the container content:
-    cmd = ('sudo docker rm -v %s' %(container_name));
+    cmd = ('docker rm -v %s' %(container_name));
     os.system(cmd);
     
 def run_cuffdiff_docker_fromCsvOrFile(filename_csv_I = None,filename_list_I = []):
