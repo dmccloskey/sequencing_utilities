@@ -37,6 +37,7 @@ class GDFieldError(GDParseError):
     """
     def __init__(self,field_num,field_name,field_value,msg,inner_exception_msg=None):
         self.field_num=field_num,
+        self.field_name = field_name
         self.field_value=field_value
         self.msg=msg
         self.inner_exception_msg=inner_exception_msg
