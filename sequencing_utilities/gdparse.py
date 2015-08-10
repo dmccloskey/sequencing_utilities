@@ -264,7 +264,7 @@ class GDParser():
             #Field 3: parent-ids <uint32>
             #ids of evidence that support this mutation. May be set to "." or left blank.
             if data_elements[2]!='':
-                if item_class=='mutation':
+                if item_class=='mutation' or item_class == 'evidence':
                     if data_elements[2]=='.':
                         new_data['parent_ids']='manual'
                     else:
