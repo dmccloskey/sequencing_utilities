@@ -32,15 +32,19 @@ def run_bam2gff_docker(host_bam_I,local_gff_I,host_gff_O):
     #change the permissions of the file
     gff_filename = local_gff_I.split('/')[-1];
     cmd = ("sudo chmod 666 %s" %(local_gff_I));
+    os.system("echo %s" %s(cmd));
     os.system(cmd);
     #copy the gff file back to the original bam file location:
     cmd = ('sudo mv %s/%s %s' %(local_gff_I,gff_filename,host_gff_O));
+    os.system("echo %s" %s(cmd));
     os.system(cmd);
-    #delete the local copy
-    cmd = ('sudo rm -rf %s' %(local_gff_I));
-    os.system(cmd);
+    ##delete the local copy
+    #cmd = ('sudo rm -rf %s' %(local_gff_I));
+    #os.system("echo %s" %s(cmd));
+    #os.system(cmd);
     #delete the container and the container content:
     cmd = ('sudo docker rm -v %s' %(container_name));
+    os.system("echo %s" %s(cmd));
     os.system(cmd);
 
 def run_bam2gff_docker_fromCsvOrFile(filename_csv_I = None,filename_list_I = []):
