@@ -18,8 +18,10 @@ def run_bam2gff_docker(host_bam_I,local_gff_I,host_gff_O):
     #2. mount the host file
     #3. run docker
     
-    docker_mount_1 = '/home/user/reference.bam'
-    user_output = '/home/user/reference.gff'
+    gff_filename = local_gff_I.split('/')[-1];
+
+    docker_mount_1 = '/home/user/' + gff_filename + '.bam'
+    user_output = '/home/user/' + gff_filename + '.gff'
     container_name = 'bam2gff';
 
     python_cmd = ("from sequencing_utilities.makegff import write_samfile_to_gff;write_samfile_to_gff('%s','%s',separate_strand=False);" %(docker_mount_1,user_output));
@@ -30,7 +32,6 @@ def run_bam2gff_docker(host_bam_I,local_gff_I,host_gff_O):
     docker_cp = ("sudo docker cp %s:%s %s" %(container_name,user_output,local_gff_I));
     os.system(docker_cp);
     #change the permissions of the file
-    gff_filename = local_gff_I.split('/')[-1];
     cmd = ("sudo chmod 666 %s" %(local_gff_I));
     os.system("echo %s" %(cmd));
     os.system(cmd);
