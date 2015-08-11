@@ -24,7 +24,7 @@ def run_bam2gff_docker(host_bam_I,local_gff_I,host_gff_O):
 
     python_cmd = ("from sequencing_utilities.makegff import write_samfile_to_gff;write_samfile_to_gff('%s','%s',separate_strand=False);" %(docker_mount_1,user_output));
     docker_run = ('sudo docker run --name=%s -v %s:%s dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,host_bam_I,docker_mount_1,python_cmd));
-    os.system("echo %s" %s(docker_run));
+    os.system("echo %s" %(docker_run));
     os.system(docker_run);
     #copy the gff file out of the docker container into a guest location
     docker_cp = ("sudo docker cp %s:%s %s" %(container_name,user_output,local_gff_I));
