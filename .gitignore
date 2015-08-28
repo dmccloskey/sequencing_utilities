@@ -1,3 +1,18 @@
+# vs solution files #
+#####################
+*.sln
+*.suo
+obj/
+
+# vs project files #
+####################
+*.pyproj
+main.py
+
+# log files #
+#############
+*.log
+
 *.pyc
 settings.ini
 build/
