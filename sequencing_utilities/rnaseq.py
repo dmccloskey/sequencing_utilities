@@ -6,7 +6,7 @@ from .sam2bam import convert_samfile
 from .makegff import write_samfile_to_gff
 
 
-def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../indexes/', paired=True, insertsize=1000, threads=8, trim3=3,
+def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../indexes/', paired='paired', insertsize=1000, threads=8, trim3=3,
                    bowtie='bowtie',cufflinks='cufflinks',samtools='samtools',cuffdiff='cuffdiff',
                    htseqcount='htseq-count',htseqqa = 'htseq-qa'):
     '''Process RNA sequencing data from the commandline
@@ -18,6 +18,7 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
     #base_input = list of sample directories for each replicate in sample 1
     organism = organism name
     indexes_dir = directory of the bowtie indexes
+    paired = 'paired', 'unpaired', or "mixed"
 
     Output:
     
@@ -56,7 +57,7 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
     fna_index = indexes_dir + organism + ".fna"
 
     # generate the bowtie command based on input
-    if paired:
+    if paired=='paired':
         p1 = []
         p2 = []
         for fastq_file in fastq_files:
@@ -86,7 +87,7 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
         # TODO -m 0
         bowtie_command = "%s -X %d -n 2 -p %d -3 %d --verbose -S %s -1 %s -2 %s > %s.sam" % \
             (bowtie, insertsize, threads, trim3, indexes_dir + organism, p1_str, p2_str, base_output)
-    else:
+    elif paired=='unpaired':
         p1 = []
         for fastq_file in fastq_files:
             name_part = fastq_file[len(basename):]
@@ -97,9 +98,28 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
             name_part = name_part.strip("_")
             if name_part == "R1":
                 p1.append(dirname_I + fastq_file)
+        assert(len(p1) > 0)
         p1.sort()
         p1_str = ",".join(p1)
         bowtie_command = "%s -n 2 -p %d --verbose -S %s %s > %s.sam" % (bowtie, threads, indexes_dir + organism, p1_str, base_output)
+    elif paired=='mixed':
+        p1 = []
+        for fastq_file in fastq_files:
+            name_part = fastq_file[len(basename):]
+            # get rid of the ".fastq"
+            name_part = name_part[:-6]
+            if name_part.endswith("_001") or name_part.endswith("_000") or name_part.endswith("_002"):
+                name_part = name_part[:-4]
+            name_part = name_part.strip("_")
+            if name_part == "R1":
+                p1.append(dirname_I + fastq_file)
+            elif name_part == "R2":
+                p1.append(dirname_I + fastq_file)
+        assert(len(p1) > 0)
+        p1.sort()
+        p1_str = ",".join(p1)
+        bowtie_command = "%s -X %d -n 2 -p %d -3 %d --verbose -S %s --12 %s > %s.sam" % \
+            (bowtie, insertsize, threads, trim3, indexes_dir + organism, p1_str, base_output)
 
     # run the bowtie command
     print(bowtie_command)
