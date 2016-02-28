@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from setuptools import setup
 
@@ -18,7 +18,7 @@ setup(name="sequencing_utilities",
     #'Environment :: Console',
     #'Intended Audience :: Science/Research',
     #'Operating System :: OS Independent',
-    #'Programming Language :: Python :: 3.4',
+    #'Programming Language :: Python :: 3.4+',
     #'Programming Language :: Cython',
     #'Programming Language :: Python :: Implementation :: CPython',
     #'Topic :: Scientific/Engineering',
