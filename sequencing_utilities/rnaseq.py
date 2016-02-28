@@ -87,8 +87,19 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
         bowtie_command = "%s -X %d -n 2 -p %d -3 %d --verbose -S %s -1 %s -2 %s > %s.sam" % \
             (bowtie, insertsize, threads, trim3, indexes_dir + organism, p1_str, p2_str, base_output)
     else:
-        f_str = ",".join(fastq_files)
-        bowtie_command = "%s -n 2 -p %d --verbose -S %s %s > %s.sam" % (bowtie, threads, indexes_dir + organism, f_str, base_output)
+        p1 = []
+        for fastq_file in fastq_files:
+            name_part = fastq_file[len(basename):]
+            # get rid of the ".fastq"
+            name_part = name_part[:-6]
+            if name_part.endswith("_001") or name_part.endswith("_000") or name_part.endswith("_002"):
+                name_part = name_part[:-4]
+            name_part = name_part.strip("_")
+            if name_part == "R1":
+                p1.append(dirname_I + fastq_file)
+        p1.sort()
+        p1_str = ",".join(p1)
+        bowtie_command = "%s -n 2 -p %d --verbose -S %s %s > %s.sam" % (bowtie, threads, indexes_dir + organism, p1_str, base_output)
 
     # run the bowtie command
     print(bowtie_command)
