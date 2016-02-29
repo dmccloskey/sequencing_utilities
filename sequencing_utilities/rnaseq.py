@@ -52,6 +52,7 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
     # files need to be extracted (fastq.gz should be deflated with gzip -d)
     fastq_files = [i for i in os.listdir(dirname_I)
             if i.startswith(basename) and i.endswith(".fastq")]
+    if verbose_I: print(fastq_file);
     gff_index = indexes_dir + organism + ".gtf"
     #gff_index = indexes_dir + organism + ".gff"
     fna_index = indexes_dir + organism + ".fna"
@@ -61,7 +62,6 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
         p1 = []
         p2 = []
         for fastq_file in fastq_files:
-            if verbose: print(fastq_file);
             name_part = fastq_file[len(basename):]
             # get rid of the ".fastq"
             name_part = name_part[:-6]
@@ -81,6 +81,9 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
         p2.sort()
         p1_str = ",".join(p1)
         p2_str = ",".join(p2)
+        if verbose_I: 
+            print(p1_str);
+            print(p2_str);
         #p1_str = dirname_O + "R1.fastq";
         #cat_files(p1,p1_str);
         #p2_str = dirname_O + "R2.fastq";
@@ -91,7 +94,6 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
     elif paired=='unpaired':
         p1 = []
         for fastq_file in fastq_files:
-            if verbose: print(fastq_file);
             name_part = fastq_file[len(basename):]
             # get rid of the ".fastq"
             name_part = name_part[:-6]
@@ -103,11 +105,12 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
         assert(len(p1) > 0)
         p1.sort()
         p1_str = ",".join(p1)
+        if verbose_I: 
+            print(p1_str);
         bowtie_command = "%s -n 2 -p %d --verbose -S %s %s > %s.sam" % (bowtie, threads, indexes_dir + organism, p1_str, base_output)
     elif paired=='mixed':
         p1 = []
         for fastq_file in fastq_files:
-            if verbose: print(fastq_file);
             name_part = fastq_file[len(basename):]
             # get rid of the ".fastq"
             name_part = name_part[:-6]
@@ -121,6 +124,8 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
         assert(len(p1) > 0)
         p1.sort()
         p1_str = ",".join(p1)
+        if verbose_I: 
+            print(p1_str);
         bowtie_command = "%s -X %d -n 2 -p %d -3 %d --verbose -S %s --12 %s > %s.sam" % \
             (bowtie, insertsize, threads, trim3, indexes_dir + organism, p1_str, base_output)
 
