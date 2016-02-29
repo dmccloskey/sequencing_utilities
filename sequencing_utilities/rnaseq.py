@@ -8,7 +8,7 @@ from .makegff import write_samfile_to_gff
 
 def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../indexes/', paired='paired', insertsize=1000, threads=8, trim3=3,
                    bowtie='bowtie',cufflinks='cufflinks',samtools='samtools',cuffdiff='cuffdiff',
-                   htseqcount='htseq-count',htseqqa = 'htseq-qa'):
+                   htseqcount='htseq-count',htseqqa = 'htseq-qa',verbose_I=True):
     '''Process RNA sequencing data from the commandline
 
     Input:
@@ -61,6 +61,7 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
         p1 = []
         p2 = []
         for fastq_file in fastq_files:
+            if verbose: print(fastq_file);
             name_part = fastq_file[len(basename):]
             # get rid of the ".fastq"
             name_part = name_part[:-6]
@@ -90,6 +91,7 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
     elif paired=='unpaired':
         p1 = []
         for fastq_file in fastq_files:
+            if verbose: print(fastq_file);
             name_part = fastq_file[len(basename):]
             # get rid of the ".fastq"
             name_part = name_part[:-6]
@@ -105,6 +107,7 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
     elif paired=='mixed':
         p1 = []
         for fastq_file in fastq_files:
+            if verbose: print(fastq_file);
             name_part = fastq_file[len(basename):]
             # get rid of the ".fastq"
             name_part = name_part[:-6]
