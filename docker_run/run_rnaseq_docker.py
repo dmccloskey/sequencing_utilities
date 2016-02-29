@@ -41,7 +41,7 @@ def run_rnaseq_docker(basename_I,host_dirname_I,organism_I,host_indexes_dir_I,
     #make the processing container
     rnaseq_cmd = ("process_rnaseq('%s','%s','%s','%s','%s',paired='%s',threads=%s,trim3=%s);" %(basename_I, docker_mount_1,user_output,organism_I,docker_mount_2,paired_I,threads_I,trim3_I));
     python_cmd = ("from sequencing_utilities.rnaseq import process_rnaseq;%s" %(rnaseq_cmd));
-    docker_run = ('docker run --name=%s -v ~%s:%s -v ~%s:%s -u=root dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,host_dirname_I,docker_mount_1,host_indexes_dir_I,docker_mount_2,python_cmd));
+    docker_run = ('docker run --name=%s -v %s:%s -v %s:%s -u=root dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,host_dirname_I,docker_mount_1,host_indexes_dir_I,docker_mount_2,python_cmd));
     os.system(docker_run);
     ##make the data container (avoid permission errors)
     #bash_cmd = ('cp -R %s %s && cp -R %s %s' %(data_mount_1,docker_mount_1,data_mount_2,docker_mount_2));

@@ -52,7 +52,7 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
     # files need to be extracted (fastq.gz should be deflated with gzip -d)
     fastq_files = [i for i in os.listdir(dirname_I)
             if i.startswith(basename) and i.endswith(".fastq")]
-    if verbose_I: print(fastq_file);
+    if verbose_I: print(fastq_files);
     gff_index = indexes_dir + organism + ".gtf"
     #gff_index = indexes_dir + organism + ".gff"
     fna_index = indexes_dir + organism + ".fna"
