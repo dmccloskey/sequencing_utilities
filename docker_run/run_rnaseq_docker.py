@@ -4,7 +4,7 @@ import csv, sys, json
 
 def run_rnaseq_docker(basename_I,host_dirname_I,organism_I,host_indexes_dir_I,
                       local_dirname_I,host_dirname_O,
-                      paired_I=True,
+                      paired_I='paired',
                       threads_I=2,trim3_I=3):
     '''Process RNA sequencing data
     INPUT:
@@ -24,17 +24,34 @@ def run_rnaseq_docker(basename_I,host_dirname_I,organism_I,host_indexes_dir_I,
     host_dirname_O = /media/proline/dmccloskey/Resequencing_RNA/fastq/140818_11_OxicEvo04EcoliGlcM9_Broth-4/ (remote storage location)
     '''
     #1. create a container named rnaseq using sequencing utilities
-    #2. mount the host file
+    #1. create a container named rnaseqdata using sequencing utilities
+    #2. mount the host file into rnaseqdata
+    #2. mount the rnaseqdata volumes into rnaseq
     #3. run docker
-    docker_mount_1 = '/media/Resequencing_RNA/fastq/'
-    docker_mount_2 = '/media/Resequencing_RNA/indexes/'
-    user_output = '/home/user/'
+    #data_mount_1 = '/media/Sequencing/fastq/'
+    #data_mount_2 = '/media/Sequencing/indexes/'
+    #docker_mount_1 = '/home/user/Sequencing/fastq/'
+    #docker_mount_2 = '/home/user/Sequencing/indexes/'
+    #datacontainer_name = 'rnaseqdata';
+    docker_mount_1 = '/media/Sequencing/fastq/'
+    docker_mount_2 = '/media/Sequencing/indexes/'
+    user_output = '/home/user/Sequencing/output/'
     container_name = 'rnaseq';
-
-    rnaseq_cmd = ("process_rnaseq('%s','%s','%s','%s','%s',paired=%s,threads=%s,trim3=%s);" %(basename_I, docker_mount_1,user_output,organism_I,docker_mount_2,paired_I,threads_I,trim3_I));
+    
+    #make the processing container
+    rnaseq_cmd = ("process_rnaseq('%s','%s','%s','%s','%s',paired='%s',threads=%s,trim3=%s);" %(basename_I, docker_mount_1,user_output,organism_I,docker_mount_2,paired_I,threads_I,trim3_I));
     python_cmd = ("from sequencing_utilities.rnaseq import process_rnaseq;%s" %(rnaseq_cmd));
-    docker_run = ('sudo docker run --name=%s -v %s:%s -v %s:%s dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,host_dirname_I,docker_mount_1,host_indexes_dir_I,docker_mount_2,python_cmd));
+    docker_run = ('docker run --name=%s -v %s:%s -v %s:%s -u=root dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,host_dirname_I,docker_mount_1,host_indexes_dir_I,docker_mount_2,python_cmd));
     os.system(docker_run);
+    ##make the data container (avoid permission errors)
+    #bash_cmd = ('cp -R %s %s && cp -R %s %s' %(data_mount_1,docker_mount_1,data_mount_2,docker_mount_2));
+    #docker_run = ('docker run --name=%s -v %s:%s -v %s:%s dmccloskey/sequencing_utilities bash -c "%s"' %(datacontainer_name,host_dirname_I,data_mount_1,host_indexes_dir_I,data_mount_2,bash_cmd));
+    #os.system(docker_run);
+    ##make the processing container
+    #rnaseq_cmd = ("process_rnaseq('%s','%s','%s','%s','%s',paired='%s',threads=%s,trim3=%s);" %(basename_I, docker_mount_1,user_output,organism_I,docker_mount_2,paired_I,threads_I,trim3_I));
+    #python_cmd = ("from sequencing_utilities.rnaseq import process_rnaseq;%s" %(rnaseq_cmd));
+    #docker_run = ('docker run --name=%s --volumes-from=%s dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,datacontainer_name,python_cmd));
+    #os.system(docker_run);
     ##copy the gff file out of the docker container into a guest location
     #docker_cp = ("sudo docker cp %s:%s%s.bam %s" %(container_name,user_output,basename_I,local_dirname_I));
     #os.system(docker_cp);
@@ -57,10 +74,11 @@ def run_rnaseq_docker(basename_I,host_dirname_I,organism_I,host_indexes_dir_I,
     #os.system(cmd);
     #cmd = ('sudo mv %s%s/ %s' %(local_dirname_I,basename_I,host_dirname_O));
     #os.system(cmd);
-    ###delete the local copy
-    ##cmd = ('sudo rm -rf %s' %(local_dirname_I));
-    ##os.system(cmd);
-    #copy the gff file out of the docker container into a guest location
+    ##delete the local copy
+    #cmd = ('sudo rm -rf %s' %(local_dirname_I));
+    #os.system(cmd);
+    #copy the gff file out of the docker container into a host location
+    #PermissionError: [Errno 13] Permission denied: '/media/Resequencing_RNA/fastq/'
     docker_cp = ("sudo docker cp %s:%s%s.bam %s" %(container_name,user_output,basename_I,host_dirname_O));
     os.system(docker_cp);
     docker_cp = ("sudo docker cp %s:%s%s.gff %s" %(container_name,user_output,basename_I,host_dirname_O));
@@ -71,6 +89,7 @@ def run_rnaseq_docker(basename_I,host_dirname_I,organism_I,host_indexes_dir_I,
     os.system(docker_cp);
     #delete the container and the container content:
     cmd = ('sudo docker rm -v %s' %(container_name));
+    #cmd = ('sudo docker rm -v %s' %(datacontainer_name));
     os.system(cmd);
     
 def run_rnaseq_docker_fromCsvOrFile(filename_csv_I = None,filename_list_I = []):

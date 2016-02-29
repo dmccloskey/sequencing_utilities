@@ -11,10 +11,8 @@ USER root
 MAINTAINER Douglas McCloskey <dmccloskey87@gmail.com>
 
 # Install dependencies and bowtie, bowtie2, and samtools
-RUN apt-get update && apt-get install -y wget \
+RUN apt-get update && apt-get install -y \
 	unzip \
-	git \
-	build-essential \
 	python2.7-dev \
 	python-numpy \
 	python-matplotlib \
@@ -29,13 +27,14 @@ WORKDIR /usr/local/
 #RUN git clone https://github.com/dmccloskey/sequencing_utilities.git
 RUN wget https://github.com/dmccloskey/sequencing_utilities/archive/master.zip \
 	&& unzip master.zip \
-	&& mv sequencing_utilities-master sequencing_utilities \
-	&& python3 sequencing_utilities/setup.py install \
+	&& mv sequencing_utilities-master sequencing_utilities
+WORKDIR /usr/local/sequencing_utilities/
+RUN python3 setup.py install \
 	&& rm -rf /usr/local/sequencing_utilities \
 	&& rm -rf /usr/local/master.zip
 
 # Install cufflinks from http
-#WORKDIR /usr/local/
+WORKDIR /usr/local/
 RUN wget http://cole-trapnell-lab.github.io/cufflinks/assets/downloads/cufflinks-2.2.1.Linux_x86_64.tar.gz \
 	&& tar -zxvf cufflinks-2.2.1.Linux_x86_64.tar.gz \
 	&& rm -rf cufflinks-2.2.1.Linux_x86_64.tar.gz
@@ -57,7 +56,7 @@ WORKDIR /usr/local/
 RUN wget --no-check-certificate https://pypi.python.org/packages/source/H/HTSeq/HTSeq-0.6.1p1.tar.gz
 RUN tar -zxvf HTSeq-0.6.1p1.tar.gz
 WORKDIR HTSeq-0.6.1p1/
-RUN python setup.py install \
+RUN python2.7 setup.py install \
 	&& chmod +x scripts/htseq-count \
 	&& chmod +x scripts/htseq-qa \
 	&& rm -rf /usr/local/HTSeq-0.6.1p1.tar.gz
@@ -66,6 +65,14 @@ RUN python setup.py install \
 ENV PATH /usr/local/HTSeq-0.6.1p1/scripts:$PATH
 
 # Return app user
+RUN mkdir /home/user/Sequencing \
+	&& mkdir /home/user/Sequencing/fastq \
+	&& mkdir /home/user/Sequencing/indexes \
+	&& mkdir /home/user/Sequencing/output \
+	&& chmod -R u+rwx /home/user/Sequencing/fastq \
+	&& chmod -R u+rwx /home/user/Sequencing/indexes \
+	&& chmod -R u+rwx /home/user/Sequencing/output 
+VOLUME ['/home/user/Sequencing/fastq','/home/user/Sequencing/indexes']
 WORKDIR $HOME
 USER user
 
