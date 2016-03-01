@@ -32,8 +32,8 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
     #1. create a container named rnaseq using sequencing utilities
     #2. mount the host file
     #3. run docker
-    docker_mount_1 = '/media/Resequencing_RNA/fastq/'
-    docker_mount_2 = '/media/Resequencing_RNA/indexes/'
+    docker_mount_1 = '/media/Sequencing_RNA/fastq/'
+    docker_mount_2 = '/media/Sequencing_RNA/indexes/'
 
     samples_message = samples_name_1 + "_vs_" + samples_name_2;
 
@@ -62,24 +62,26 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
         %(docker_name_dir_1_str,docker_name_dir_2_str,samples_name_1,samples_name_2,\
         organism_I,user_output,docker_mount_2,threads,library_norm_method,fdr,library_type,more_options));
     python_cmd = ("from sequencing_utilities.cuffdiff import run_cuffdiff;%s" %(rnaseq_cmd));
-    docker_run = ('sudo docker run -u=root --name=%s %s -v %s:%s dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,samples_mount,host_indexes_dir_I,docker_mount_2,python_cmd));
+    docker_run = ('docker run -u=root --name=%s %s -v %s:%s dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,samples_mount,host_indexes_dir_I,docker_mount_2,python_cmd));
     os.system("echo %s" %(docker_run));
     os.system(docker_run);
-    #copy the output directory file out of the docker container into a guest location
-    #docker_cp = ("sudo docker cp %s:%s/ %s/%s" %(container_name,user_output,local_dirname_I,samples_message));
-    docker_cp = ("sudo docker cp %s:%s/ %s/" %(container_name,user_output,local_dirname_I));
-    os.system(docker_cp);
-    #change the permissions of the file
-    #local_dirname = local_dirname_I.split('/')[-1];
-    cmd = ("sudo chmod -R 666 %s" %(local_dirname_I));
-    os.system(cmd);
-    #copy the output directory back to the original bam file location:
-    os.system(cmd);
-    cmd = ('sudo mv %s%s/ %s' %(local_dirname_I,samples_message,host_dirname_O));
-    os.system(cmd);
+    ##copy the output directory file out of the docker container into a guest location
+    #docker_cp = ("sudo docker cp %s:%s/ %s/" %(container_name,user_output,local_dirname_I));
+    #os.system(docker_cp);
+    ##change the permissions of the file
+    ##local_dirname = local_dirname_I.split('/')[-1];
+    #cmd = ("sudo chmod -R 666 %s" %(local_dirname_I));
+    #os.system(cmd);
+    ##copy the output directory back to the original bam file location:
+    #os.system(cmd);
+    #cmd = ('sudo mv %s%s/ %s' %(local_dirname_I,samples_message,host_dirname_O));
+    #os.system(cmd);
     ##delete the local copy
     #cmd = ('rm -rf %s' %(local_dirname_I));
     #os.system(cmd);
+    #copy the output directory file out of the docker container into the host dir
+    docker_cp = ("sudo docker cp %s:%s/ %s/%s" %(container_name,user_output,host_dirname_O,samples_message));
+    os.system(cmd);
     #delete the container and the container content:
     cmd = ('sudo docker rm -v %s' %(container_name));
     os.system(cmd);

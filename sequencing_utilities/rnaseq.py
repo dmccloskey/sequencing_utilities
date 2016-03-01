@@ -107,7 +107,8 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
         p1_str = ",".join(p1)
         if verbose_I: 
             print(p1_str);
-        bowtie_command = "%s -n 2 -p %d --verbose -S %s %s %s.sam" % (bowtie, threads, indexes_dir + organism, p1_str, base_output)
+        #bowtie_command = "%s -n 2 -p %d --verbose -S %s %s %s.sam" % (bowtie, threads, indexes_dir + organism, p1_str, base_output)
+        bowtie_command = "%s -n 2 -p %d -S %s %s %s.sam" % (bowtie, threads, indexes_dir + organism, p1_str, base_output)
     elif paired=='mixed':
         p1 = []
         for fastq_file in fastq_files:
