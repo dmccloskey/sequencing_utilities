@@ -32,8 +32,8 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
     #1. create a container named rnaseq using sequencing utilities
     #2. mount the host file
     #3. run docker
-    docker_mount_1 = '/media/Sequencing_RNA/fastq/'
-    docker_mount_2 = '/media/Sequencing_RNA/indexes/'
+    docker_mount_1 = '/media/Sequencing/fastq/'
+    docker_mount_2 = '/media/Sequencing/indexes/'
 
     samples_message = samples_name_1 + "_vs_" + samples_name_2;
 

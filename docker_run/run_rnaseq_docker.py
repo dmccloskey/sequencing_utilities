@@ -79,13 +79,13 @@ def run_rnaseq_docker(basename_I,host_dirname_I,organism_I,host_indexes_dir_I,
     #os.system(cmd);
     #copy the gff file out of the docker container into a host location
     #PermissionError: [Errno 13] Permission denied: '/media/Resequencing_RNA/fastq/'
-    docker_cp = ("sudo docker cp %s:%s%s.bam %s" %(container_name,user_output,basename_I,host_dirname_O));
+    docker_cp = ("docker cp %s:%s%s.bam %s" %(container_name,user_output,basename_I,host_dirname_O));
     os.system(docker_cp);
-    docker_cp = ("sudo docker cp %s:%s%s.gff %s" %(container_name,user_output,basename_I,host_dirname_O));
+    docker_cp = ("docker cp %s:%s%s.gff %s" %(container_name,user_output,basename_I,host_dirname_O));
     os.system(docker_cp);
-    docker_cp = ("sudo docker cp %s:%s%s.sam %s" %(container_name,user_output,basename_I,host_dirname_O));
+    docker_cp = ("docker cp %s:%s%s.sam %s" %(container_name,user_output,basename_I,host_dirname_O));
     os.system(docker_cp);
-    docker_cp = ("sudo docker cp %s:%s%s/ %s" %(container_name,user_output,basename_I,host_dirname_O));
+    docker_cp = ("docker cp %s:%s%s/ %s" %(container_name,user_output,basename_I,host_dirname_O));
     os.system(docker_cp);
     #delete the container and the container content:
     cmd = ('sudo docker rm -v %s' %(container_name));
