@@ -80,10 +80,10 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
     #cmd = ('rm -rf %s' %(local_dirname_I));
     #os.system(cmd);
     #copy the output directory file out of the docker container into the host dir
-    docker_cp = ("sudo docker cp %s:%s/ %s/%s" %(container_name,user_output,host_dirname_O,samples_message));
-    os.system(cmd);
+    docker_cp = ("docker cp %s:%s/ %s/%s" %(container_name,user_output,host_dirname_O,samples_message));
+    os.system(docker_cp)
     #delete the container and the container content:
-    cmd = ('sudo docker rm -v %s' %(container_name));
+    cmd = ('docker rm -v %s' %(container_name));
     os.system(cmd);
     
 def run_cuffdiff_docker_fromCsvOrFile(filename_csv_I = None,filename_list_I = []):
