@@ -90,7 +90,8 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
         #p2_str = dirname_O + "R2.fastq";
         #cat_files(p2,p2_str);
         # TODO -m 0
-        bowtie_command = "%s -X %d -n 2 -p %d -3 %d --verbose -S %s -1 %s -2 %s > %s.sam" % \
+        #bowtie_command = "%s -X %d -n 2 -p %d -3 %d --verbose -S %s -1 %s -2 %s > %s.sam" % \
+        bowtie_command = "%s -X %d -n 2 -p %d -3 %d -S %s -1 %s -2 %s %s.sam" % \
             (bowtie, insertsize, threads, trim3, indexes_dir + organism, p1_str, p2_str, base_output)
     elif paired=='unpaired':
         p1 = []
