@@ -3,7 +3,8 @@ import os
 import csv, sys, json
 
 def run_rnaseq_docker(basename_I,host_dirname_I,organism_I,host_indexes_dir_I,
-                      local_dirname_I,host_dirname_O,
+                      #local_dirname_I,
+                      host_dirname_O,
                       paired_I='paired',
                       threads_I=2,trim3_I=3,
                       library_type_I='fr-firststrand'):
@@ -40,7 +41,7 @@ def run_rnaseq_docker(basename_I,host_dirname_I,organism_I,host_indexes_dir_I,
     container_name = 'rnaseq';
     
     #make the processing container
-    rnaseq_cmd = ("process_rnaseq('%s','%s','%s','%s','%s',paired='%s',threads=%s,trim3=%s,library_type=%s);" %(basename_I, docker_mount_1,user_output,organism_I,docker_mount_2,paired_I,threads_I,trim3_I,library_type_I));
+    rnaseq_cmd = ("process_rnaseq('%s','%s','%s','%s','%s',paired='%s',threads=%s,trim3=%s,library_type='%s');" %(basename_I, docker_mount_1,user_output,organism_I,docker_mount_2,paired_I,threads_I,trim3_I,library_type_I));
     python_cmd = ("from sequencing_utilities.rnaseq import process_rnaseq;%s" %(rnaseq_cmd));
     docker_run = ('docker run --name=%s -v %s:%s -v %s:%s -u=root dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,host_dirname_I,docker_mount_1,host_indexes_dir_I,docker_mount_2,python_cmd));
     os.system(docker_run);
@@ -89,7 +90,7 @@ def run_rnaseq_docker(basename_I,host_dirname_I,organism_I,host_indexes_dir_I,
     docker_cp = ("docker cp %s:%s%s/ %s" %(container_name,user_output,basename_I,host_dirname_O));
     os.system(docker_cp);
     #delete the container and the container content:
-    cmd = ('sudo docker rm -v %s' %(container_name));
+    cmd = ('docker rm -v %s' %(container_name));
     #cmd = ('sudo docker rm -v %s' %(datacontainer_name));
     os.system(cmd);
     
@@ -103,7 +104,7 @@ def run_rnaseq_docker_fromCsvOrFile(filename_csv_I = None,filename_list_I = []):
     for row_cnt,row in enumerate(filename_list_I):
         cmd = ("echo running rnaseq for basename %s" %(row['basename_I']));
         os.system(cmd);
-        run_rnaseq_docker(row['basename_I'],row['host_dirname_I'],row['organism_I'],row['host_indexes_dir_I'],row['local_dirname_I'],row['host_dirname_O'],row['paired_I'],row['threads_I'],row['trim3_I'],row['library_type_I']);
+        run_rnaseq_docker(row['basename_I'],row['host_dirname_I'],row['organism_I'],row['host_indexes_dir_I'],row['host_dirname_O'],row['paired_I'],row['threads_I'],row['trim3_I'],row['library_type_I']);
          
 def read_csv(filename):
     """read table data from csv file"""
@@ -131,7 +132,7 @@ def main_singleFile():
     parser.add_argument("host_dirname_I", help="""directory for .fastq files""")
     parser.add_argument("organism_I", help="""name of index""")
     parser.add_argument("host_indexes_dir_I", help="""directory for indexes""")
-    parser.add_argument("local_dirname_I", help="""location for temporary output""")
+    #parser.add_argument("local_dirname_I", help="""location for temporary output""")
     parser.add_argument("host_dirname_O", help="""location for output on the host""")
     parser.add_argument("paired_I", help="""unpaired, paired, or mixed end reads (i.e., 'unpaired', 'paired', 'mixed')""")
     parser.add_argument("threads_I", help="""number of processors to use""")
@@ -139,7 +140,8 @@ def main_singleFile():
     parser.add_argument("library_type_I", help="""the library type""")
     args = parser.parse_args()
     run_rnaseq_docker(args.basename_I,args.host_dirname_I,args.organism_I,args.host_indexes_dir_I,
-                      args.local_dirname_I,args.host_dirname_O,
+                      #args.local_dirname_I,
+                      args.host_dirname_O,
                       args.paired_I,
                       args.threads_I,args.trim3_I);
 
