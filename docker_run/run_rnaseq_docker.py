@@ -3,7 +3,6 @@ import os
 import csv, sys, json
 
 def run_rnaseq_docker(basename_I,host_dirname_I,organism_I,host_indexes_dir_I,
-                      #local_dirname_I,
                       host_dirname_O,
                       paired_I='paired',
                       threads_I=2,trim3_I=3,
@@ -54,33 +53,7 @@ def run_rnaseq_docker(basename_I,host_dirname_I,organism_I,host_indexes_dir_I,
     #python_cmd = ("from sequencing_utilities.rnaseq import process_rnaseq;%s" %(rnaseq_cmd));
     #docker_run = ('docker run --name=%s --volumes-from=%s dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,datacontainer_name,python_cmd));
     #os.system(docker_run);
-    ##copy the gff file out of the docker container into a guest location
-    #docker_cp = ("sudo docker cp %s:%s%s.bam %s" %(container_name,user_output,basename_I,local_dirname_I));
-    #os.system(docker_cp);
-    #docker_cp = ("sudo docker cp %s:%s%s.gff %s" %(container_name,user_output,basename_I,local_dirname_I));
-    #os.system(docker_cp);
-    #docker_cp = ("sudo docker cp %s:%s%s.sam %s" %(container_name,user_output,basename_I,local_dirname_I));
-    #os.system(docker_cp);
-    #docker_cp = ("sudo docker cp %s:%s%s/ %s" %(container_name,user_output,basename_I,local_dirname_I));
-    #os.system(docker_cp);
-    ##change the permissions of the file
-    ##local_dirname = local_dirname_I.split('/')[-1];
-    #cmd = ("sudo chmod -R 666 %s" %(local_dirname_I));
-    #os.system(cmd);
-    ##copy the gff and bam file back to the original bam file location:
-    #cmd = ('sudo mv %s%s.bam %s' %(local_dirname_I,basename_I,host_dirname_O));
-    #os.system(cmd);
-    #cmd = ('sudo mv %s%s.gff %s' %(local_dirname_I,basename_I,host_dirname_O));
-    #os.system(cmd);
-    #cmd = ('sudo mv %s%s.sam %s' %(local_dirname_I,basename_I,host_dirname_O));
-    #os.system(cmd);
-    #cmd = ('sudo mv %s%s/ %s' %(local_dirname_I,basename_I,host_dirname_O));
-    #os.system(cmd);
-    ##delete the local copy
-    #cmd = ('sudo rm -rf %s' %(local_dirname_I));
-    #os.system(cmd);
     #copy the gff file out of the docker container into a host location
-    #PermissionError: [Errno 13] Permission denied: '/media/Resequencing_RNA/fastq/'
     docker_cp = ("docker cp %s:%s%s.bam %s" %(container_name,user_output,basename_I,host_dirname_O));
     os.system(docker_cp);
     docker_cp = ("docker cp %s:%s%s.gff %s" %(container_name,user_output,basename_I,host_dirname_O));
@@ -91,7 +64,7 @@ def run_rnaseq_docker(basename_I,host_dirname_I,organism_I,host_indexes_dir_I,
     os.system(docker_cp);
     #delete the container and the container content:
     cmd = ('docker rm -v %s' %(container_name));
-    #cmd = ('sudo docker rm -v %s' %(datacontainer_name));
+    #cmd = ('docker rm -v %s' %(datacontainer_name));
     os.system(cmd);
     
 def run_rnaseq_docker_fromCsvOrFile(filename_csv_I = None,filename_list_I = []):
@@ -132,7 +105,6 @@ def main_singleFile():
     parser.add_argument("host_dirname_I", help="""directory for .fastq files""")
     parser.add_argument("organism_I", help="""name of index""")
     parser.add_argument("host_indexes_dir_I", help="""directory for indexes""")
-    #parser.add_argument("local_dirname_I", help="""location for temporary output""")
     parser.add_argument("host_dirname_O", help="""location for output on the host""")
     parser.add_argument("paired_I", help="""unpaired, paired, or mixed end reads (i.e., 'unpaired', 'paired', 'mixed')""")
     parser.add_argument("threads_I", help="""number of processors to use""")
@@ -140,7 +112,6 @@ def main_singleFile():
     parser.add_argument("library_type_I", help="""the library type""")
     args = parser.parse_args()
     run_rnaseq_docker(args.basename_I,args.host_dirname_I,args.organism_I,args.host_indexes_dir_I,
-                      #args.local_dirname_I,
                       args.host_dirname_O,
                       args.paired_I,
                       args.threads_I,args.trim3_I);
