@@ -57,7 +57,7 @@ def run_cuffnorm_docker(samples_host_dirs,samples_names,
         %(docker_name_dir_1_str,samples_names,\
         organism_I,user_output,docker_mount_2,\
         threads,library_norm_method,library_type,more_options));
-    python_cmd = ("from sequencing_utilities.cuffnorm import run_cuffnorm;%s" %(rnaseq_cmd));
+    python_cmd = ("from sequencing_utilities.cuffdiff import run_cuffnorm;%s" %(rnaseq_cmd));
     docker_run = ('docker run -u=root --name=%s %s -v %s:%s dmccloskey/sequencing_utilities python3 -c "%s"' \
         %(container_name,samples_mount,host_indexes_dir_I,docker_mount_2,python_cmd));
     os.system("echo %s" %(docker_run));
