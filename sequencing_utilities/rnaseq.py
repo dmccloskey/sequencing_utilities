@@ -99,10 +99,10 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
         # TODO -m 0
         #bowtie_command = "%s -X %d -n 2 -p %d -3 %d -S %s -1 %s -2 %s %s.sam" % \
         #    (bowtie, insertsize, threads, trim3, indexes_dir + organism, p1_str, p2_str, base_output)
-        bowtie_options = "-X %d -n 2 -p %d -3 %d " % \
+        bowtie_options = "-X %d -n 2 -p %d -3 %d" % \
             (insertsize, threads, trim3)
         if bowtie_options_I:
-            bowtie_options+=bowtie_options_I;
+            bowtie_options+=" %s" %(bowtie_options_I);
         bowtie_command = "%s %s -S %s -1 %s -2 %s %s.sam" % \
             (bowtie, bowtie_options, indexes_dir + organism, p1_str, p2_str, base_output)
     elif paired=='unpaired':
@@ -122,10 +122,10 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
         if verbose_I: 
             print(p1_str);
         #bowtie_command = "%s -n 2 -p %d -S %s %s %s.sam" % (bowtie, threads, indexes_dir + organism, p1_str, base_output)
-        bowtie_options = "-n 2 -p %d -3 %d " % \
+        bowtie_options = "-n 2 -p %d -3 %d" % \
             (threads, trim3)
         if bowtie_options_I:
-            bowtie_options+=bowtie_options_I;
+            bowtie_options+=" %s" %(bowtie_options_I);
         bowtie_command = "%s %s -S %s %s %s.sam" % (bowtie, bowtie_options, indexes_dir + organism, p1_str, base_output)
     elif paired=='mixed':
         p1 = []
@@ -147,10 +147,10 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
             print(p1_str);
         #bowtie_command = "%s -X %d -n 2 -p %d -3 %d --verbose -S %s --12 %s %s.sam" % \
         #    (bowtie, insertsize, threads, trim3, indexes_dir + organism, p1_str, base_output)
-        bowtie_options = "-X %d -n 2 -p %d -3 %d " % \
+        bowtie_options = "-X %d -n 2 -p %d -3 %d" % \
             (insertsize, threads, trim3)
         if bowtie_options_I:
-            bowtie_options+=bowtie_options_I;
+            bowtie_options+=" %s" %(bowtie_options_I);
         bowtie_command = "%s %s --verbose -S %s --12 %s %s.sam" % \
             (bowtie, bowtie_options, indexes_dir + organism, p1_str, base_output)
 
@@ -170,10 +170,10 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
     # generate the cufflinks command and call cufflinks:
     #cufflinks_command = "%s --library-type %s -p %s -G %s -o %s/ %s.bam" % \
     #    (cufflinks, library_type, threads, gff_index, base_output,  base_output)
-    cufflinks_options = "--library-type %s -p %s " % \
+    cufflinks_options = "--library-type %s -p %s" % \
         (insertsize, threads, trim3)
     if cufflinks_options_I:
-        cufflinks_options+=cufflinks_options_I;
+        cufflinks_options+=" %s" %(cufflinks_options_I);
     cufflinks_command = "%s %s -G %s -o %s/ %s.bam" % \
         (cufflinks, cufflinks_options, gff_index, base_output,  base_output)
     print(cufflinks_command)
