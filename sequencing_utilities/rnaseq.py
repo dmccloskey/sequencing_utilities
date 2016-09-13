@@ -9,17 +9,22 @@ from .makegff import write_samfile_to_gff
 def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../indexes/', paired='paired', insertsize=1000, threads=8, trim3=3,
                    bowtie='bowtie',cufflinks='cufflinks',samtools='samtools',cuffdiff='cuffdiff',
                    htseqcount='htseq-count',htseqqa = 'htseq-qa',verbose_I=True,
-                   library_type='fr-firststrand'):
+                   library_type='fr-firststrand',index_type = '.gtf',
+                   bowtie_options_I = '',cufflinks_options_I = ''):
     '''Process RNA sequencing data from the commandline
 
     Input:
     basename = base name of replicate fastq files
     dirname_I = name of the input directory holding the fastq files
     dirname_O = name of the output directory
-    #base_input = list of sample directories for each replicate in sample 1
     organism = organism name
     indexes_dir = directory of the bowtie indexes
+    index_type = string, '.gtf' or '.gff'
     paired = 'paired', 'unpaired', or "mixed"
+    library_type = string, cufflinks library type
+    verbose_I = boolean
+    bowtie_options_I = string, additional command line arguments not explicitly provided
+    cufflinks_options_I = string, additional command line arguments not explicitly provided
 
     Output:
     
@@ -54,8 +59,10 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
     fastq_files = [i for i in os.listdir(dirname_I)
             if i.startswith(basename) and i.endswith(".fastq")]
     if verbose_I: print(fastq_files);
-    gff_index = indexes_dir + organism + ".gtf"
-    #gff_index = indexes_dir + organism + ".gff"
+    if index_type in ['.gtf','.gff']:
+        gff_index = indexes_dir + organism + index_type
+    else:
+        print('index_type not recognized.')
     fna_index = indexes_dir + organism + ".fna"
 
     # generate the bowtie command based on input
@@ -90,9 +97,14 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
         #p2_str = dirname_O + "R2.fastq";
         #cat_files(p2,p2_str);
         # TODO -m 0
-        #bowtie_command = "%s -X %d -n 2 -p %d -3 %d --verbose -S %s -1 %s -2 %s > %s.sam" % \
-        bowtie_command = "%s -X %d -n 2 -p %d -3 %d -S %s -1 %s -2 %s %s.sam" % \
-            (bowtie, insertsize, threads, trim3, indexes_dir + organism, p1_str, p2_str, base_output)
+        #bowtie_command = "%s -X %d -n 2 -p %d -3 %d -S %s -1 %s -2 %s %s.sam" % \
+        #    (bowtie, insertsize, threads, trim3, indexes_dir + organism, p1_str, p2_str, base_output)
+        bowtie_options = "-X %d -n 2 -p %d -3 %d " % \
+            (insertsize, threads, trim3)
+        if bowtie_options_I:
+            bowtie_options+=bowtie_options_I;
+        bowtie_command = "%s %s -S %s -1 %s -2 %s %s.sam" % \
+            (bowtie, bowtie_options, indexes_dir + organism, p1_str, p2_str, base_output)
     elif paired=='unpaired':
         p1 = []
         for fastq_file in fastq_files:
@@ -109,8 +121,12 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
         p1_str = ",".join(p1)
         if verbose_I: 
             print(p1_str);
-        #bowtie_command = "%s -n 2 -p %d --verbose -S %s %s %s.sam" % (bowtie, threads, indexes_dir + organism, p1_str, base_output)
-        bowtie_command = "%s -n 2 -p %d -S %s %s %s.sam" % (bowtie, threads, indexes_dir + organism, p1_str, base_output)
+        #bowtie_command = "%s -n 2 -p %d -S %s %s %s.sam" % (bowtie, threads, indexes_dir + organism, p1_str, base_output)
+        bowtie_options = "-n 2 -p %d -3 %d " % \
+            (threads, trim3)
+        if bowtie_options_I:
+            bowtie_options+=bowtie_options_I;
+        bowtie_command = "%s %s -S %s %s %s.sam" % (bowtie, bowtie_options, indexes_dir + organism, p1_str, base_output)
     elif paired=='mixed':
         p1 = []
         for fastq_file in fastq_files:
@@ -129,8 +145,14 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
         p1_str = ",".join(p1)
         if verbose_I: 
             print(p1_str);
-        bowtie_command = "%s -X %d -n 2 -p %d -3 %d --verbose -S %s --12 %s > %s.sam" % \
-            (bowtie, insertsize, threads, trim3, indexes_dir + organism, p1_str, base_output)
+        #bowtie_command = "%s -X %d -n 2 -p %d -3 %d --verbose -S %s --12 %s %s.sam" % \
+        #    (bowtie, insertsize, threads, trim3, indexes_dir + organism, p1_str, base_output)
+        bowtie_options = "-X %d -n 2 -p %d -3 %d " % \
+            (insertsize, threads, trim3)
+        if bowtie_options_I:
+            bowtie_options+=bowtie_options_I;
+        bowtie_command = "%s %s --verbose -S %s --12 %s %s.sam" % \
+            (bowtie, bowtie_options, indexes_dir + organism, p1_str, base_output)
 
     # run the bowtie command
     print(bowtie_command)
@@ -146,10 +168,14 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
     #os.system("%s %s.sam" % (htseqqa,base_output))
     
     # generate the cufflinks command and call cufflinks:
-    #cufflinks_command = "%s -o %s/ -g %s -b %s -library-type fr-firststrand %s.bam" % \
-    #    (cufflinks, base_output, gff_index, fna_index, base_output)
-    cufflinks_command = "%s --library-type %s -p %s -G %s -o %s/ %s.bam" % \
-        (cufflinks, library_type, threads, gff_index, base_output,  base_output)
+    #cufflinks_command = "%s --library-type %s -p %s -G %s -o %s/ %s.bam" % \
+    #    (cufflinks, library_type, threads, gff_index, base_output,  base_output)
+    cufflinks_options = "--library-type %s -p %s " % \
+        (insertsize, threads, trim3)
+    if cufflinks_options_I:
+        cufflinks_options+=cufflinks_options_I;
+    cufflinks_command = "%s %s -G %s -o %s/ %s.bam" % \
+        (cufflinks, cufflinks_options, gff_index, base_output,  base_output)
     print(cufflinks_command)
     os.system(cufflinks_command)
 
