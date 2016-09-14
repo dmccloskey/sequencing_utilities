@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 import os
 import csv, sys, json
 
@@ -7,6 +7,7 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
                     host_dirname_O, threads = 1,
                    library_norm_method = 'quartile', fdr = 0.05,
                    library_type ='fr-firststrand',
+        index_type_I = '.gtf',
                    more_options=None):
     '''Process RNA sequencing data
     INPUT:
@@ -16,6 +17,7 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
     samples_name_2 = sample name for sample 2
     organism_I = name of index
     host_indexes_dir_I = directory for indexes
+    index_type_I = string for index extention (e.g., '.gtf' or '.gff')
     host_dirname_O = location for output on the host
 
     EXAMPLE:
@@ -56,9 +58,9 @@ def run_cuffdiff_docker(samples_host_dir_1,samples_host_dir_2,samples_name_1,sam
     if not more_options:
         more_options = 'None';
 
-    rnaseq_cmd = ("run_cuffdiff(['%s'],['%s'],'%s','%s','%s','%s',indexes_dir='%s',threads=%s,library_norm_method='%s',fdr=%s,library_type='%s',more_options=%s);" \
+    rnaseq_cmd = ("run_cuffdiff(['%s'],['%s'],'%s','%s','%s','%s',indexes_dir='%s',threads=%s,library_norm_method='%s',fdr=%s,library_type='%s',index_type='%s',more_options=%s);" \
         %(docker_name_dir_1_str,docker_name_dir_2_str,samples_name_1,samples_name_2,\
-        organism_I,user_output,docker_mount_2,threads,library_norm_method,fdr,library_type,more_options));
+        organism_I,user_output,docker_mount_2,threads,library_norm_method,fdr,library_type,index_type_I,more_options));
     python_cmd = ("from sequencing_utilities.cuffdiff import run_cuffdiff;%s" %(rnaseq_cmd));
     docker_run = ('docker run -u=root --name=%s %s -v %s:%s dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,samples_mount,host_indexes_dir_I,docker_mount_2,python_cmd));
     os.system("echo %s" %(docker_run));
@@ -85,7 +87,9 @@ def run_cuffdiff_docker_fromCsvOrFile(filename_csv_I = None,filename_list_I = []
                             row['organism_I'],row['host_indexes_dir_I'],
                             row['host_dirname_O'],
                             row['threads'],row['library_norm_method'],
-                            row['fdr'],row['library_type'],row['more_options']);
+                            row['fdr'],row['library_type'],
+                          row['index_type_I'],
+                            row['more_options']);
          
 def read_csv(filename):
     """read table data from csv file"""
@@ -120,6 +124,7 @@ def main_singleFile():
     parser.add_argument("library_norm_method", help="""method for library normalization""")
     parser.add_argument("fdr", help="""false discover rate""")
     parser.add_argument("library_type", help="""the type of library used""")
+    parser.add_argument("index_type_I", help="""index file type (.gtf or .gff)""")
     parser.add_argument("more_options", help="""string representation of additional cuffdiff options""")
     args = parser.parse_args()
     run_cuffdiff_docker(args.samples_host_dir_1,args.samples_host_dir_2,
@@ -127,7 +132,8 @@ def main_singleFile():
                       args.organism_I,args.host_indexes_dir_I,
                       args.host_dirname_O,
                       args.threads,args.library_norm_method,
-                      args.fdr,args.library_type,args.more_options);
+                      args.fdr,args.library_type,
+                      args.index_type_I,args.more_options);
 
 
 def main_batchFile():

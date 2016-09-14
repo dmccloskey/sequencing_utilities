@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 import os
 import csv, sys, json
 
@@ -6,6 +6,7 @@ def run_cuffnorm_docker(samples_host_dirs,samples_names,
                     organism_I,host_indexes_dir_I,host_dirname_O, threads = 1,
                    library_norm_method = 'geometric', 
                    library_type ='fr-firststrand',
+                    index_type_I = '.gtf',
                    more_options=None):
     '''Process RNA sequencing data
     INPUT:
@@ -53,10 +54,10 @@ def run_cuffnorm_docker(samples_host_dirs,samples_names,
     if not more_options:
         more_options = 'None';
 
-    rnaseq_cmd = ("run_cuffnorm('%s','%s','%s','%s',indexes_dir='%s',threads=%s,library_norm_method='%s',library_type='%s',more_options=%s);" \
+    rnaseq_cmd = ("run_cuffnorm('%s','%s','%s','%s',indexes_dir='%s',threads=%s,library_norm_method='%s',library_type='%s',index_type='%s',more_options=%s);" \
         %(docker_name_dir_1_str,samples_names,\
         organism_I,user_output,docker_mount_2,\
-        threads,library_norm_method,library_type,more_options));
+        threads,library_norm_method,library_type,index_type_I,more_options));
     python_cmd = ("from sequencing_utilities.cuffdiff import run_cuffnorm;%s" %(rnaseq_cmd));
     docker_run = ('docker run -u=root --name=%s %s -v %s:%s dmccloskey/sequencing_utilities python3 -c "%s"' \
         %(container_name,samples_mount,host_indexes_dir_I,docker_mount_2,python_cmd));
@@ -84,7 +85,9 @@ def run_cuffnorm_docker_fromCsvOrFile(filename_csv_I = None,filename_list_I = []
                             row['organism_I'],row['host_indexes_dir_I'],
                             row['host_dirname_O'],
                             row['threads'],row['library_norm_method'],
-                            row['library_type'],row['more_options']);
+                            row['library_type'],
+                          row['index_type_I'],
+                            row['more_options']);
          
 def read_csv(filename):
     """read table data from csv file"""
@@ -116,6 +119,7 @@ def main_singleFile():
     parser.add_argument("threads", help="""number of processors to use""")
     parser.add_argument("library_norm_method", help="""method for library normalization""")
     parser.add_argument("library_type", help="""the type of library used""")
+    parser.add_argument("index_type_I", help="""index file type (.gtf or .gff)""")
     parser.add_argument("more_options", help="""string representation of additional cuffnorm options""")
     args = parser.parse_args()
     run_cuffnorm_docker(args.samples_host_dirs,

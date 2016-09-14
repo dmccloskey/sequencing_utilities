@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 import os
 import csv, sys, json
 
@@ -22,6 +22,7 @@ def run_rnaseq_docker(basename_I,
     host_indexes_dir_I = directory for indexes
     local_dirname_I = location for temporary output
     host_dirname_O = location for output on the host
+    index_type_I = string for index extention (e.g., '.gtf' or '.gff')
 
     EXAMPLE:
     basename_I = 140818_11_OxicEvo04EcoliGlcM9_Broth-4
@@ -50,7 +51,7 @@ def run_rnaseq_docker(basename_I,
     rnaseq_cmd = ("process_rnaseq('%s','%s','%s','%s','%s',paired='%s',threads=%s,trim3=%s,library_type='%s',\
         index_type='%s',bowtie_options_I='%s',cufflinks_options_I='%s');" %\
         (basename_I, docker_mount_1,user_output,organism_I,docker_mount_2,paired_I,threads_I,trim3_I,library_type_I,
-         bowtie_options_I,cufflinks_options_I));
+         index_type_I,bowtie_options_I,cufflinks_options_I));
     python_cmd = ("from sequencing_utilities.rnaseq import process_rnaseq;%s" %(rnaseq_cmd));
     docker_run = ('docker run --name=%s -v %s:%s -v %s:%s -u=root dmccloskey/sequencing_utilities python3 -c "%s"' %(container_name,host_dirname_I,docker_mount_1,host_indexes_dir_I,docker_mount_2,python_cmd));
     os.system(docker_run);
@@ -141,7 +142,9 @@ def main_singleFile():
                       args.paired_I,
                       args.threads_I,args.trim3_I,
                       args.library_type_I,
-                      args.index_type_I);
+                      args.index_type_I,
+                      args.bowtie_options_I,
+                      args.cufflinks_options_I);
 
 def main_batchFile():
     """process RNAseq data using docker in batch

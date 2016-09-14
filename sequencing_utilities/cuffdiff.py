@@ -1,4 +1,4 @@
-from pandas import read_table
+﻿from pandas import read_table
 import os
 
 def load_cuffdiff(filename):
@@ -14,6 +14,7 @@ def run_cuffdiff(samples_dir_1,samples_dir_2,sample_name_1,sample_name_2,organis
                    cuffdiff='cuffdiff',indexes_dir='../indexes/', threads = 1,
                    library_norm_method = 'quartile', fdr = 0.05,
                    library_type ='fr-firststrand',
+                   index_type='.gtf',
                    more_options=None):
     '''Run cuffdiff from the commandline
 
@@ -57,8 +58,11 @@ def run_cuffdiff(samples_dir_1,samples_dir_2,sample_name_1,sample_name_2,organis
     # parse input into string values
     sample_1=','.join(samples_dir_1);
     sample_2=','.join(samples_dir_2);
-
-    gff_index = indexes_dir + organism + ".gtf";
+    
+    if index_type in ['.gtf','.gff']:
+        gff_index = indexes_dir + organism + index_type
+    else:
+        print('index_type not recognized.')
 
     cuffdiff_options = "--library-type %s --library-norm-method %s --FDR %s --num-threads %s" % \
         (library_type,library_norm_method,fdr,threads);
@@ -80,6 +84,7 @@ def run_cuffnorm(samples_dirs,samples_names,organism,output_dir,
                    cuffnorm='cuffnorm',indexes_dir='../indexes/', threads = 1,
                    library_norm_method = 'quartile',
                    library_type ='fr-firststrand',
+                   index_type='.gtf',
                    more_options=None):
     '''Run cuffnorm from the commandline
 
@@ -95,6 +100,7 @@ def run_cuffnorm(samples_dirs,samples_names,organism,output_dir,
     cuffnorm = string to run cuffnorm (give the absolute directory of cuffnorm.exe if cuffnorm is not in PATH)
     indexes_dir = directory where indexes are located
     library_type = string indicating the library type (e.g. fr-first-strand)
+    index_type = string indicating the index file extention (e.g. '.gtf' or '.gff')
     more_options = other options not specified (e.g. '--library-type fr-firststrand)
 
     Output:
@@ -132,8 +138,11 @@ def run_cuffnorm(samples_dirs,samples_names,organism,output_dir,
     for sdir in samples_dirs:
         sample_tmp=','.join(sdir);
         sample_1.append(sample_tmp);
-
-    gff_index = indexes_dir + organism + ".gtf";
+        
+    if index_type in ['.gtf','.gff']:
+        gff_index = indexes_dir + organism + index_type
+    else:
+        print('index_type not recognized.')
 
     cuffnorm_options = "--library-type %s --library-norm-method %s --num-threads %s" % \
         (library_type,library_norm_method,threads);
