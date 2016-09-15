@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 import os
 
 #from .seq_settings import bowtie, indexes_dir, cufflinks
@@ -171,7 +171,7 @@ def process_rnaseq(basename, dirname_I, dirname_O, organism, indexes_dir='../ind
     #cufflinks_command = "%s --library-type %s -p %s -G %s -o %s/ %s.bam" % \
     #    (cufflinks, library_type, threads, gff_index, base_output,  base_output)
     cufflinks_options = "--library-type %s -p %s" % \
-        (insertsize, threads, trim3)
+        (library_type, threads)
     if cufflinks_options_I:
         cufflinks_options+=" %s" %(cufflinks_options_I);
     cufflinks_command = "%s %s -G %s -o %s/ %s.bam" % \
